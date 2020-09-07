@@ -111,7 +111,7 @@
 
 <p>至此，全部代码完成。</p>
 <p>效果如图：</p>
-<p><img src="https://riceeater.oss-cn-qingdao.aliyuncs.com/blog/%E5%A4%9A%E7%BA%BF%E7%A8%8B-HandlerThread%E6%A8%A1%E6%8B%9F%E4%B8%8B%E8%BD%BD.gif"></p>
+<p><img src="/images/%E5%A4%9A%E7%BA%BF%E7%A8%8B-HandlerThread%E6%A8%A1%E6%8B%9F%E4%B8%8B%E8%BD%BD.gif"></p>
 <h3 id="原理浅析"><a href="#原理浅析" class="headerlink" title="原理浅析"></a>原理浅析</h3><p>接下来我们简单聊聊HandlerThread的原理，我们之前在讲到Handler的时候有说过，Handler不能直接在子线程中使用，在子线程中使用前需要先进行相关操作，那么我们查看HandlerThread的源码看看HandlerThread的相关方法中是否初始化了Looper对象：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">HandlerThread</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>(name);</span><br><span class="line">    mPriority = Process.THREAD_PRIORITY_DEFAULT;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 

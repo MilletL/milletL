@@ -157,7 +157,7 @@
 </ol>
 <p><strong>注意，以下所有内容都基于用户好友数量极多(大于1000)的情况</strong></p>
 <h2 id="IM监听"><a href="#IM监听" class="headerlink" title="IM监听"></a>IM监听</h2><p>之前接手聊一聊之前，大略看了下整个云信监听，用到的有首页右上角的聊一聊入口、聊一聊页面、聊天页面，最早的做法（v1.1.0）是下图这样：</p>
-<p><img src="https://riceeater.oss-cn-qingdao.aliyuncs.com/share/chat_bugs.png" alt="chat_bugs"></p>
+<p><img src="/images/chat_bugs.png" alt="chat_bugs"></p>
         
       
     </div>
@@ -558,7 +558,7 @@
       
         <p>今天来研究一下Android中拖拽排序的相关技术。我们知道，<code>RecyclerView</code>是一个十分强大的类，它可以实现<code>ListView</code>的所有功能，并且更易用。关于它的好处不必多说，懂的都懂。我们基于<code>RecyclerView</code>来完成一个可拖拽排序的列表，并且在拖拽之后保存列表状态，这一功能在开发需求中应该使用到的还是蛮多的。</p>
 <h3 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h3><p>开始这个功能之前，肯定是要先完成一部分知识储备。好了，开始学习~😳</p>
-<p><img src="https://riceeater.oss-cn-qingdao.aliyuncs.com/blog/%E5%B4%A9%E6%BA%83.png"></p>
+<p><img src="/images/%E5%B4%A9%E6%BA%83.png"></p>
 <p>首先，<code>RecyclerView</code>为我们提供了一个拖拽和滑动删除的帮助类，这个类位于<code>android.support.v7.widget.helper</code>包下，类名是<code>ItemTouchHelper</code>。我们若要使用<code>RecyclerView</code>的拖拽，可以复写这个类，将初始化好的对象与<code>RecyclerView</code>绑定。但其实<code>ItemTouchHelper</code>并非我们要关注的重点，因为一般我们只需要继承此类，用就可以了。那么我们真正去控制滑动和拖拽的类在哪呢？我们从<code>ItemTouchHelper</code>的构造方法可以看出一点端倪：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Creates an ItemTouchHelper that will work with the given Callback.</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     * You can attach ItemTouchHelper to a RecyclerView via</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@link</span> #attachToRecyclerView(RecyclerView)&#125;. Upon attaching, it will add an item decoration,</span></span><br><span class="line"><span class="comment">     * an onItemTouchListener and a Child attach / detach listener to the RecyclerView.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> callback The Callback which controls the behavior of this touch helper.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ItemTouchHelper</span><span class="params">(Callback callback)</span> </span>&#123;</span><br><span class="line">    mCallback = callback;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
         
@@ -690,7 +690,7 @@
 <li><strong>副标题随着RecyclerView滑动动画上移或者动画下移</strong></li>
 </ul>
 <p>把这几个东西放一起来重新梳理一下吧，先上效果图：</p>
-<p><img src="https://riceeater.oss-cn-qingdao.aliyuncs.com/blog/%E8%87%AA%E5%AE%9A%E4%B9%89View-%E6%82%AC%E6%B5%AE%E6%9D%A1.gif"></p>
+<p><img src="/images/%E8%87%AA%E5%AE%9A%E4%B9%89View-%E6%82%AC%E6%B5%AE%E6%9D%A1.gif"></p>
 <p>左边是Android4.1上的效果，右边是5.0以上效果。下面就一点点来分析这种效果是如何实现的。</p>
         
       

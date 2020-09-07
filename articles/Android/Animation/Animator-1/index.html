@@ -137,7 +137,7 @@ ok，讲了这么多废话，都不如代码直观，下面我们就来讲解Val
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * xml实现动画</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">xmlAnimatorTest</span> <span class="params">(View view)</span> </span>&#123;</span><br><span class="line">    Animator animator = AnimatorInflater.loadAnimator(<span class="keyword">this</span>,R.animator.animator_test);</span><br><span class="line">    animator.setTarget(ivContainer);</span><br><span class="line">    animator.start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>实现的效果如图所示：</p>
-<p><img src="https://riceeater.oss-cn-qingdao.aliyuncs.com/blog/%E5%8A%A8%E7%94%BB-%E5%B1%9E%E6%80%A7%E5%8A%A8%E7%94%BB.gif"></p>
+<p><img src="/images/%E5%8A%A8%E7%94%BB-%E5%B1%9E%E6%80%A7%E5%8A%A8%E7%94%BB.gif"></p>
 </br>
 
 <p>ok，到这里属性动画的基本用法就讲完了，接下来将会介绍Animator的底层实现和一些高级用法以及酷炫的动画特效，代码地址依然是：<a target="_blank" rel="noopener" href="https://github.com/riceeater/AndroidAnimationTest">github</a>，欢迎查看。</p>

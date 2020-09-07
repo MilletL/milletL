@@ -108,7 +108,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">loadImage</span><span class="params">(View view)</span> </span>&#123;</span><br><span class="line">  asyncTask = <span class="keyword">new</span> DownloadImageTask();</span><br><span class="line">  asyncTask.execute(IMAGE_URL);<span class="comment">//可以接受多个参数</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>这里千万要留意使用AsyncTask时定义类型不要直接写AsyncTask，直接用其子类的类型，不然会由于泛型的问题导致ClassCastException，我当年在这儿被坑过，运行效果是这样的：</p>
-<p><img src="https://riceeater.oss-cn-qingdao.aliyuncs.com/blog/%E5%A4%9A%E7%BA%BF%E7%A8%8B-%E6%A8%A1%E6%8B%9F%E4%B8%8B%E8%BD%BD%E5%9B%BE%E7%89%87.gif"></p>
+<p><img src="/images/%E5%A4%9A%E7%BA%BF%E7%A8%8B-%E6%A8%A1%E6%8B%9F%E4%B8%8B%E8%BD%BD%E5%9B%BE%E7%89%87.gif"></p>
 <p>总结一下<strong>AsyncTask的注意事项</strong>：</p>
 <ul>
 <li><p>AsyncTask只能在主线程中初始化和执行</p>

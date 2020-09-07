@@ -142,7 +142,7 @@ HTML代码如下(使用了菜鸟教程的范例)：
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (version &lt; Build.VERSION_CODES.KITKAT) &#123;</span><br><span class="line">    webView.loadUrl(<span class="string">&quot;javascript:changeImage()&quot;</span>);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    webView.evaluateJavascript(<span class="string">&quot;javascript:changeImage()&quot;</span>, <span class="keyword">new</span> ValueCallback&lt;String&gt;() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onReceiveValue</span><span class="params">(String value)</span> </span>&#123;</span><br><span class="line">            <span class="comment">//获取返回值，如果存在</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>App调用JS方法演示如下：</p>
-<p><img src="https://riceeater.oss-cn-qingdao.aliyuncs.com/blog/WebView-App%E8%B0%83%E7%94%A8JS.gif"></p>
+<p><img src="/images/WebView-App%E8%B0%83%E7%94%A8JS.gif"></p>
 <h3 id="JS调用APP原生方法"><a href="#JS调用APP原生方法" class="headerlink" title="JS调用APP原生方法"></a>JS调用APP原生方法</h3><p>JS调用原生方法有三种方式：</p>
 <ul>
 <li><code>WebView.addJavascriptInterface(Object obj,String name)</code></li>
@@ -180,7 +180,7 @@ HTML代码如下(使用了菜鸟教程的范例)：
 <p>onJsAlert、onJsConfirm、onJsPrompt这三个WebChromeClient类的方法分别对应JS的alert、confirm、prompt方法</p>
 <p>当然，如果有需要可以在alert等方法中添加协议限制，我这里偷个懒就不写了。</p>
 <p>演示如下：</p>
-<p><img src="https://riceeater.oss-cn-qingdao.aliyuncs.com/blog/WebView-JS%E8%B0%83%E7%94%A8%E5%8E%9F%E7%94%9F.gif"></p>
+<p><img src="/images/WebView-JS%E8%B0%83%E7%94%A8%E5%8E%9F%E7%94%9F.gif"></p>
 <h4 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h4><p>总的来说，这三种方法各有优劣，<strong>第一种在低版本上容易造成严重的安全漏洞，但胜在使用简单，可以应付较为简单的情景；第二种适用于不需要返回值的场景，缺点也在于获取返回值过于繁琐；第三种同样使用较为复杂，不过适用于大部分场景。</strong></p>
 <h3 id="总结-2"><a href="#总结-2" class="headerlink" title="总结"></a>总结</h3><p>那么本篇文章的所有内容就是这样了。所有代码地址在<a target="_blank" rel="noopener" href="https://github.com/riceeater/AndroidWebViewDemo">github</a>，欢迎指正~</p>
 <p>enjoy~</p>

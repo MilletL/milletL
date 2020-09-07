@@ -95,7 +95,7 @@ FragmentStatePagerAdapter:对步长以内的fragment，跟FragmentPagerAdapter�
 <p>FragmentStatePagerAdapter:对步长以内的fragment，跟FragmentPagerAdapter一样，不会调用任何销毁操作，再次显示也无需重新创建，对步长以外的fragment会调用destroyItem，跟FragmentPagerAdapter不一样，会真正销毁（同时销毁view和fragment，调用onDestroyView以及其后面的所有销毁方法），重建时会从最初的onAttach开始一直到onActivityCreated，适用于页面比较多的情况。</p>
 <a id="more"></a>
 
-<h3 id="Fragment生命周期"><a href="#Fragment生命周期" class="headerlink" title="Fragment生命周期"></a>Fragment生命周期</h3><p><img src="https://riceeater.oss-cn-qingdao.aliyuncs.com/blog/Fragment%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.webp"></p>
+<h3 id="Fragment生命周期"><a href="#Fragment生命周期" class="headerlink" title="Fragment生命周期"></a>Fragment生命周期</h3><p><img src="/images/Fragment%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.webp"></p>
 <h3 id="Fragment通信"><a href="#Fragment通信" class="headerlink" title="Fragment通信"></a>Fragment通信</h3><ol>
 <li>Fragment调用getActivity()获取所依附的Activity对象</li>
 <li>Activity中调用Fragment的方法可以通过接口回调等手段</li>
