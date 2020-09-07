@@ -1,0 +1,784 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>第 3 页 | RiceEater的小小世界 | My Life&#39;s Getting Better.</title>
+
+  
+  <meta name="author" content="小米粒">
+  
+
+  
+
+  
+  <meta name="keywords" content="RiceEater 小米粒 riceeater.info">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  
+
+  <meta property="og:site_name" content="RiceEater的小小世界"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="RiceEater的小小世界" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+<meta name="generator" content="Hexo 5.1.1"></head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">RiceEater的小小世界</a>
+    </h1>
+    <p class="site-description">My Life&#39;s Getting Better.</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+        <li><a href="/plans">计划</a></li>
+      
+        <li><a href="/about">关于</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/articles/Android/MultiThread/Handler-2/"><span>Android多线程-Handler原理简单剖析</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/MultiThread/Handler-2/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-04-24T11:47:23.000Z">
+          2018-04-24
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>上一章的学习我们已经了解了Handler进行线程间通信的使用流程，我们知道，有几个比较重要的概念需要我们重点去了解，它们分别是：</p>
+<table>
+<thead>
+<tr>
+<th>概念</th>
+<th>定义</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>主线程(UI Thread)</td>
+<td>应用程序启动时，默认开启UI线程</td>
+<td>处理UI相关操作</td>
+</tr>
+<tr>
+<td>子线程(Worker Thread)</td>
+<td>人为控制开启的线程</td>
+<td>处理耗时操作(网络请求、数据加载等)</td>
+</tr>
+<tr>
+<td>消息(Message)</td>
+<td>线程间通讯的数据载体</td>
+<td>存储线程间需要传递的信息</td>
+</tr>
+<tr>
+<td>消息队列(MessageQueue)</td>
+<td>存储Message的一个数据结构(先进先出FIFO)</td>
+<td>存储Handler发送的消息</td>
+</tr>
+<tr>
+<td>处理器(Handler)</td>
+<td>线程通信媒介、线程间消息处理器</td>
+<td>发送消息到消息队列、处理Looper分发的消息</td>
+</tr>
+<tr>
+<td>轮询器(Looper)</td>
+<td>消息队列和处理器的通信桥梁</td>
+<td>循环取出消息队列中的消息、分发消息给相应的handler</td>
+</tr>
+</tbody></table>
+<h3 id="简单剖析"><a href="#简单剖析" class="headerlink" title="简单剖析"></a>简单剖析</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//定义handler</span></span><br><span class="line">Handler handler = <span class="keyword">new</span> Handler();</span><br><span class="line"><span class="comment">//发送消息</span></span><br><span class="line">handler.post(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">     <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="comment">//do something</span></span><br><span class="line">        &#125;</span><br><span class="line">&#125;)；</span><br></pre></td></tr></table></figure>
+
+<p>首先我们打开Handler的无参构造器源码，调用了两个参数的构造方法，如下：</p>
+        
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Android多线程通信/">Android多线程通信</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/articles/Android/MultiThread/Handler-1/"><span>Android多线程-Handler的简单使用</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/MultiThread/Handler-1/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-04-23T12:35:47.000Z">
+          2018-04-23
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>下面我们就来讲解Handler的简单使用，我们实现一个模拟下载过程的操作，并将下载进度更新到进度条和TextView中，那么事不宜迟，我们马上开始。</p>
+<p>我们先来总结下使用Handler的步骤：</p>
+<ol>
+<li>创建Hanlder对象，并在handleMessage方法中完成逻辑代码</li>
+<li>创建子线程，在子线程中创建Message对象，使用handler.post方法将消息发送给消息队列(MessageQueue)</li>
+<li>handler收到消息，并调用handleMessage方法完成通信(本质上是Looper轮询从MessageQueue中取出消息，并将其发送给Message的target，也就是发送给了handler)</li>
+</ol>
+<h3 id="创建Handler对象"><a href="#创建Handler对象" class="headerlink" title="创建Handler对象"></a>创建Handler对象</h3><p>上代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 第一步，主线程中创建Handler并在handleMessage方法中处理相应逻辑</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"> <span class="keyword">private</span> Handler handler = <span class="keyword">new</span> Handler() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;</span><br><span class="line">    	<span class="keyword">super</span>.handleMessage(msg);</span><br><span class="line">        <span class="comment">//这里完成更新UI的操作</span></span><br><span class="line">        <span class="comment">//do something</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>Handler的创建还有其他的方法，比如传入一个Callback对象的构造方法等等，不一而论， 这里handleMessage方法主要是用来处理子线程中传递出来的消息</p>
+        
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Android多线程通信/">Android多线程通信</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/articles/Android/MultiThread/Introduce/"><span>Android多线程-多线程初步，进程线程详解</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/MultiThread/Introduce/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-04-22T08:31:02.000Z">
+          2018-04-22
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>从这一部分我们开始学习Android的多线程，在这之前要搞清楚两个概念，进程和线程。</p>
+<p>Android启动一个应用程序时，若该应用程序无其他组件运行，那么系统会为这个应用程序启动一个新的linux进程，并在这个进程中默认启动一个UI线程(主线程)。默认情况下，同一应用程序的所有组件都在同一进程的主线程中运行。如果应用程序组件启动，并且已经存在该应用程序的进程（因为应用程序中的其它组件已经启动），则组件将在该进程中启动，并使用相同的主线程。但是，您可以通过设置让应用程序中的不同组件分别在不同的进程中运行，并且可以为任何进程创建其它线程。接下来详细讲述进程和线程。</p>
+<h3 id="进程-Process"><a href="#进程-Process" class="headerlink" title="进程(Process)"></a>进程(Process)</h3><p>每个App在启动前必须先创建一个进程，该进程是由Zygote fork出来的，进程具有独立的资源空间，用于承载App上运行的各种Activity/Service等组件。大多数情况一个App就运行在一个进程中，除非在AndroidManifest.xml中配置Android:process属性，或通过native代码fork进程。</p>
+<h3 id="线程"><a href="#线程" class="headerlink" title="线程"></a>线程</h3><p>默认每个Android应用程序只会有一个线程(UI线程，即主线程)，主线程负责该应用程序UI界面的显示、更新、控件交互等等，因此一些耗时操作(网络访问、下载操作、查询数据库等等)不可以放在主线程中进行，以免阻塞主线程。</p>
+<p>ps:Android规定，只有在UI线程中才能进行UI的更新操作。</p>
+        
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Android多线程通信/">Android多线程通信</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/articles/Android/Animation/Animator-2/"><span>Android动画学习之属性动画(Property Animator)-2、属性动画执行流程</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/Animation/Animator-2/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-04-20T12:03:39.000Z">
+          2018-04-20
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>经过上一章的学习，我们已经学会了属性动画的基本使用，这一章里我们就来讲一讲属性动画的底层实现，详细讲解一下什么是TimeInterpolator，什么是TypeEvaluator，以及它们是如何产生作用来呈现我们所看到的动画的。</p>
+<h3 id="Animator执行流程"><a href="#Animator执行流程" class="headerlink" title="Animator执行流程"></a>Animator执行流程</h3><p>我们从一个简单的例子来演示动画过程中的执行过程：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(<span class="meta">@Nullable</span> Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">	animator = ValueAnimator.ofFloat(<span class="number">0</span>,<span class="number">800</span>);</span><br><span class="line">    animator.setDuration(<span class="number">2000</span>);</span><br><span class="line">    animator.addUpdateListener(<span class="keyword">new</span> ValueAnimator.AnimatorUpdateListener() &#123;</span><br><span class="line">    	<span class="meta">@Override</span></span><br><span class="line">    	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onAnimationUpdate</span><span class="params">(ValueAnimator animation)</span> </span>&#123;</span><br><span class="line">    		ivContainer.setTranslationY((Float) animation.getAnimatedValue());</span><br><span class="line">    	&#125;</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">	rgInterpolatorType.setOnCheckedChangeListener(<span class="keyword">new</span> RadioGroup.OnCheckedChangeListener() &#123;</span><br><span class="line">    	<span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCheckedChanged</span><span class="params">(RadioGroup group, <span class="keyword">int</span> checkedId)</span> </span>&#123;</span><br><span class="line">            ivContainer.setTranslationY(<span class="number">0</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">valueAnalysis</span><span class="params">(View view)</span> </span>&#123;</span><br><span class="line">    log = <span class="keyword">new</span> StringBuilder(<span class="string">&quot;&quot;</span>);</span><br><span class="line">    <span class="keyword">switch</span> (rgInterpolatorType.getCheckedRadioButtonId()) &#123;</span><br><span class="line">        <span class="keyword">case</span> R.id.rb_type_linear:</span><br><span class="line">            animator.setInterpolator(<span class="keyword">new</span> LinearInterpolator());<span class="comment">//线性插值器</span></span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> R.id.rb_type_accelerate_decelerate:</span><br><span class="line">            animator.setInterpolator(<span class="keyword">new</span> AccelerateDecelerateInterpolator());<span class="comment">//先加速后减速</span></span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> R.id.rb_type_bounce:</span><br><span class="line">            animator.setInterpolator(<span class="keyword">new</span> BounceInterpolator());<span class="comment">//弹跳</span></span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    animator.start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>程序执行效果是这样：</p>
+        
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Android动画/">Android动画</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/articles/Android/Animation/Animator-1/"><span>Android动画学习之属性动画(Property Animator)-1、基础用法</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/Animation/Animator-1/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-04-19T11:56:00.000Z">
+          2018-04-19
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>经过前两章的学习，终于到了我们使用最多的属性动画了。属性动画是Android3.0(API 11)中引入的新的动画机制，相较于补间动画，它除了可以实现补间动画的所有效果外，还能实现补间动画无法做到的效果，比如我们现在要求一张图片背景色渐变，补间动画就无法完成，而使用属性动画就可以很简单的实现这个效果。另外补间动画只能作用在View上，而不能作用于非View的对象上，比如我们自定义一个View，此View的位置我们由Ponit类(包含x、y轴坐标信息)，我们要求使用动画改变View的位置，就需要使用动画操作point对象，那么就只能使用属性动画来完成。对于补间动画来说，我们之前就已经讲过了，动画只会改变View的绘制位置而不会改变其真正属性，所以像触摸事件不会跟随动画移动，就会出现view平移后点击事件仍然留在原地的尴尬事情，而我们要介绍的属性动画就没有这个问题，因为是直接操作的View的属性，因此在其移动后，相应的事件也会随之移动。</p>
+<p>属性动画中我们使用较多的两个类，一个是ValueAnimator，另一个是ObjectAnimator，其中后者继承前者，并且封装了许多常用操作，因此比前者更加易用。ValueAnimator的父类则是Animator,Animator还有一个常用子类是AnimatorSet(动画集合)，这个我们也会在后面介绍。</p>
+<p>ok，讲了这么多废话，都不如代码直观，下面我们就来讲解ValueAnimator、ObjectAnimator以及AnimatorSet的简单使用：</p>
+        
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Android动画/">Android动画</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/articles/Android/Animation/frame-animation/"><span>Android动画学习之Frame Animation</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/Animation/frame-animation/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-04-18T11:45:54.000Z">
+          2018-04-18
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p><a href="/articles/Android-animation/Android-Animation-tween/">上一节</a>我们讲了补间动画，接下来我们来学习逐帧动画。</p>
+<p>Android中的逐帧动画是将一系列静止的画面按一定的顺序和速度进行播放从而产生的动画效果，当然静止的画面指的就是帧了，反映在我们的代码中就是一张张图片。ps：这里插一个小概念，我们玩游戏或者看电影时经常会讲到的一个词，帧数，其实指的就是1秒内播放的帧数量，用fps来表示画面传输率，一般电影播放为24帧，也就是一秒播放24个画面，游戏有30帧到60帧或者更高，更高的帧数表现为画面更加流畅，没有卡顿感。</p>
+<p>多说无益，代码才是王道，下面我们就来实现Android中的逐帧动画，依然是分为两种方式：</p>
+<h3 id="xml"><a href="#xml" class="headerlink" title="xml"></a>xml</h3><p>FrameAnimation的定义与TweenAnimation不同，它是定义在res/drawable目录下，用法如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">animation-list</span> <span class="attr">xmlns:android</span>=<span class="string">&quot;http://schemas.android.com/apk/res/android&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:oneshot</span>=<span class="string">&quot;false&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">&quot;@mipmap/anim_frame_1&quot;</span> <span class="attr">android:duration</span>=<span class="string">&quot;42&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">&quot;@mipmap/anim_frame_2&quot;</span> <span class="attr">android:duration</span>=<span class="string">&quot;42&quot;</span>/&gt;</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">&quot;@mipmap/anim_frame_27&quot;</span> <span class="attr">android:duration</span>=<span class="string">&quot;42&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">&quot;@mipmap/anim_frame_28&quot;</span> <span class="attr">android:duration</span>=<span class="string">&quot;42&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">animation-list</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看到，其实就是画面的堆叠，oneshot属性是指动画是否仅执行一次，设置为false则说明重复执行，设置为true则代表执行一次后停止。item属性很简单，只有两个，drawable设置该帧，duration设置该帧显示时长。那么这个xml的用法也很简单，可以将这个动画文件当做一个drawable来使用，设置给某个view作为背景，如下：</p>
+        
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Android动画/">Android动画</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/articles/Android/Animation/tween-animation/"><span>Android动画学习之Tween Animation</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/Animation/tween-animation/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-04-17T12:00:01.000Z">
+          2018-04-17
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>这篇文章里，我们来学习一下Tween Animation(补间动画)的使用。补间动画虽然是Android中较古老的一种动画系统，不过对于一般的需求已经足够使用了，因此熟练掌握它是很有必要的。Tween Animation主要有以下四种：</p>
+<ol>
+<li>Alpha:透明度渐变效果</li>
+<li>Rotate:旋转效果</li>
+<li>Translate:位移效果</li>
+<li>Scale:缩放效果</li>
+</ol>
+<p>Tween Animation可以使用xml或者代码两种形式来实现，接下来我们就一一举例来说明这几种效果。</p>
+<h3 id="AlphaAnimation"><a href="#AlphaAnimation" class="headerlink" title="AlphaAnimation"></a>AlphaAnimation</h3><h4 id="xml"><a href="#xml" class="headerlink" title="xml"></a>xml</h4><p>这个例子里我们来实现使用xml动画形式将ImageView的透明度从0变到1，而后再用java代码的形式将其从1变到0，首先是xml的编写，Tween动画的位置位于res目录下的anim中，新建anim_alpha：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">alpha</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:android</span>=<span class="string">&quot;http://schemas.android.com/apk/res/android&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:interpolator</span>=<span class="string">&quot;@android:anim/accelerate_decelerate_interpolator&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:fromAlpha</span>=<span class="string">&quot;1.0&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:toAlpha</span>=<span class="string">&quot;0.0&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:duration</span>=<span class="string">&quot;1000&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:repeatCount</span>=<span class="string">&quot;0&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:repeatMode</span>=<span class="string">&quot;reverse&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:fillAfter</span>=<span class="string">&quot;true&quot;</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>先解释下出现的几个属性：</p>
+        
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Android动画/">Android动画</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/articles/Android/Animation/introduce/"><span>Android动画学习之概论</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/Animation/introduce/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-04-16T11:50:10.000Z">
+          2018-04-16
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <h3 id="Android动画-初识"><a href="#Android动画-初识" class="headerlink" title="Android动画-初识"></a>Android动画-初识</h3><p>​    在Android开发过程中，动画(Animation)占到了极大地比重。动画效果的加入可以使我们的应用程序更友好，更美观。我们知道Android应用程序可以实现及其精致和复杂的动画效果，那么这些动画效果是如何做出来的呢？在Android FrameWork提供了大量的API来支持实现复杂多变的动画效果，若对Android中的动画进行分类，大体可以分为View Animation和Property Animation，其中View Animation又分为Tween Animation和Frame Animation。因此我们讲Android动画一般会说有Tween Animation(补间动画)、Frame Animation(帧动画)、Property Animation(属性动画)，这三者的区别如下:</p>
+<p><strong>Tween Animation(补间动画)</strong></p>
+<p>​    Tween Animation是Android早期版本推出的动画，主要可以实现四种效果（缩放、平移、渐变、旋转），也可以通过AnimationSet来实现动画的组合排序。不过补间动画只适用于view，局限性比较大，而且不能改变view的真实属性。对于初学者来说，不能改变view真实属性可能难以理解，举个例子来讲，一个ImageView使用tween动画进行平移操作，从屏幕左侧移动到屏幕右侧，视觉上View发生了移动，但是如果你对ImageView进行点击，你会发现执行动画后的位置点击并不会其效果，这是因为动画并没有改变ImageView的真实位置，而是将其绘制在了屏幕右侧，该ImageVIew的作用区域并没有发生改变，点击事件还是会在原位置响应！</p>
+        
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Android动画/">Android动画</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/articles/Android/Base/WebView/"><span>Android面试基础-WebView</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/Base/WebView/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-04-15T11:40:40.000Z">
+          2018-04-15
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <h3 id="WebView常见的坑爹问题"><a href="#WebView常见的坑爹问题" class="headerlink" title="WebView常见的坑爹问题"></a>WebView常见的坑爹问题</h3><p>Android API 16及之前版本WebView存在远程代码执行安全漏洞，该漏洞是由于程序未正确限制使用WebView.addJavascriptInterface方法，导致远程攻击者可以通过使用Java反射机制利用该漏洞执行任意java对象的方法</p>
+<p>WebView在布局中使用:webView写在其他容器中时，要先removeView在去destroy，不然会造成内存泄漏问题</p>
+<p>jsBridge桥接</p>
+<p>webViewClient.onPageFinished -&gt; WebChromeClient.onProgressChanged</p>
+<p>webView会单独开启线程，若未正确关闭，则会造成耗电问题</p>
+<p>WebView硬件加速会导致页面渲染问题，闪烁现象</p>
+<h3 id="关于内存泄漏问题"><a href="#关于内存泄漏问题" class="headerlink" title="关于内存泄漏问题"></a>关于内存泄漏问题</h3><p>动态添加WebView，对传入的WebView所使用的Context使用弱引用，动态添加WebView就是在布局中创建ViewGroup用来放置WebView，Activity创建后AddView来添加WebView，在Activity销毁时remove掉</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/WebView/">WebView</a><a href="/tags/面试基础/">面试基础</a><a href="/tags/Android四大组件/">Android四大组件</a><a href="/tags/内存泄漏/">内存泄漏</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/articles/Android/Base/Service/"><span>Android面试基础-Service</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/Base/Service/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-04-15T09:18:59.000Z">
+          2018-04-15
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><p>Service(服务)是一个一种可以在后台执行长时间运行操作而没有用户界面的应用组件。服务可由其他应用组件启动（如Activity），服务一旦被启动将在后台一直运行，即使启动服务的组件（Activity）已销毁也不受影响(Start模式)。 此外，组件可以绑定到服务，以与之进行交互，甚至是执行进程间通信 (IPC)。 例如，服务可以处理网络事务、播放音乐，执行文件 I/O 或与内容提供程序交互，而所有这一切均可在后台进行。Service分为两种状态：</p>
+<ul>
+<li><strong>启动状态</strong></li>
+</ul>
+<p>当应用组件（如 Activity）通过调用 startService() 启动服务时，服务即处于“启动”状态。一旦启动，服务即可在后台无限期运行，即使启动服务的组件已被销毁也不受影响，除非手动调用才能停止服务， 已启动的服务通常是执行单一操作，而且不会将结果返回给调用方。</p>
+<ul>
+<li><strong>绑定状态</strong></li>
+</ul>
+<p>当应用组件通过调用 bindService() 绑定到服务时，服务即处于“绑定”状态。绑定服务提供了一个客户端-服务器接口，允许组件与服务进行交互、发送请求、获取结果，甚至是利用进程间通信 (IPC) 跨进程执行这些操作。 仅当与另一个应用组件绑定时，绑定服务才会运行。 多个组件可以同时绑定到该服务，但全部取消绑定后，该服务即会被销毁。</p>
+        
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Service/">Service</a><a href="/tags/面试基础/">面试基础</a><a href="/tags/Android四大组件/">Android四大组件</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+
+<nav class="pagination">
+  
+  <a href="/page/2/" class="pagination-prev">上一页</a>
+  
+  
+  <a href="/page/4/" class="pagination-next">下一页</a>
+  
+</nav>
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2020 小米粒
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,243 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Android原生与JavaScript交互详解 | RiceEater的小小世界 | My Life&#39;s Getting Better.</title>
+
+  
+  <meta name="author" content="小米粒">
+  
+
+  
+  <meta name="description" content="这几天公司项目里提到了原生与HTML交互的需求，之前一直用的前人封装好的工具类。今天打算好好梳理下Android中原生与网页交互的方法和注意事项。
+谈到Android与HTML交互，其本质还是WebView与JavaScript的交互过程。这就分为两种情况：
+
+WebView或者说App调用JS方法
+JS调用APP的原生方法
+
+我们就从这两大方面逐步讲解这两种情况的实现。
+App调用JS方法Android原生调用JS方法有两种方式：
+
+WebView.loadUrl(String url)
+WebView.evaluateJavascript(String script, ValueCallback&amp;lt;String&amp;gt; resultCallback)
+
+我们用一个例子来分别讲述这两种方式的用法：
+HTML代码如下(使用了菜鸟教程的范例)：
+123456789101112131415161718192021222324252627282930313233&amp;lt;!DOCTYPE html&amp;gt;&amp;lt;html&amp;gt;    &amp;lt;head&amp;gt;        &amp;lt;meta charset=&amp;quot;utf-8&amp;quot;&amp;gt;        &amp;lt;title&amp;gt;菜鸟教程(runoob.com)&amp;lt;/title&amp;gt;    &amp;lt;/head&amp;gt;    &amp;lt;body&amp;gt;        &amp;lt;script&amp;gt;            function changeImage()            &amp;#123;                element=document.getElementById(&amp;#x27;myimage&amp;#x27;)                if (element.src.match(&amp;quot;bulbon&amp;quot;))                &amp;#123;                    element.src=&amp;quot;pic_bulboff.gif&amp;quot;;                    alert(&amp;quot;灯灭了&amp;quot;);                &amp;#125;                else                &amp;#123;                    element.src=&amp;quot;pic_bulbon.gif&amp;quot;;                    alert(&amp;quot;灯亮了&amp;quot;);                &amp;#125;            &amp;#125;            function callAndroid() &amp;#123;                &amp;lt;!-- android是对象映射时设置的名称 --&amp;gt;                alert(android.getPhoneBand());            &amp;#125;        &amp;lt;/script&amp;gt;        &amp;lt;img id=&amp;quot;myimage&amp;quot;             src=&amp;quot;pic_bulboff.gif&amp;quot; width=&amp;quot;100&amp;quot; height=&amp;quot;180&amp;quot;&amp;gt;        &amp;lt;button id=&amp;quot;call_android&amp;quot; type=&amp;quot;button&amp;quot; onclick=&amp;quot;callAndroid()&amp;quot;&amp;gt;调用Android方法&amp;lt;/button&amp;gt;    &amp;lt;/body&amp;gt;&amp;lt;/html&amp;gt;
+
+我这里将html文件和图片资源都放在了assets目录下，Android中访问assets目录下的文件使用file:///android_asset/...来获取assets目录下的文件">
+  
+
+  
+  <meta name="keywords" content="RiceEater 小米粒 riceeater.info">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="Android原生与JavaScript交互详解"/>
+
+  <meta property="og:site_name" content="RiceEater的小小世界"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="RiceEater的小小世界" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+<meta name="generator" content="Hexo 5.1.1"></head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">RiceEater的小小世界</a>
+    </h1>
+    <p class="site-description">My Life&#39;s Getting Better.</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+        <li><a href="/plans">计划</a></li>
+      
+        <li><a href="/about">关于</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>Android原生与JavaScript交互详解</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/WebView/WebViewWithJs/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-05-08T12:13:54.000Z">
+          2018-05-08
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>这几天公司项目里提到了原生与HTML交互的需求，之前一直用的前人封装好的工具类。今天打算好好梳理下Android中原生与网页交互的方法和注意事项。</p>
+<p>谈到Android与HTML交互，其本质还是WebView与JavaScript的交互过程。这就分为两种情况：</p>
+<ul>
+<li>WebView或者说App调用JS方法</li>
+<li>JS调用APP的原生方法</li>
+</ul>
+<p>我们就从这两大方面逐步讲解这两种情况的实现。</p>
+<h3 id="App调用JS方法"><a href="#App调用JS方法" class="headerlink" title="App调用JS方法"></a>App调用JS方法</h3><p>Android原生调用JS方法有两种方式：</p>
+<ul>
+<li>WebView.loadUrl(String url)</li>
+<li>WebView.evaluateJavascript(String script, ValueCallback&lt;String&gt; resultCallback)</li>
+</ul>
+<p>我们用一个例子来分别讲述这两种方式的用法：</p>
+<p>HTML代码如下(使用了菜鸟教程的范例)：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;utf-8&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">title</span>&gt;</span>菜鸟教程(runoob.com)<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">            <span class="function"><span class="keyword">function</span> <span class="title">changeImage</span>(<span class="params"></span>)</span></span></span><br><span class="line">            &#123;</span><br><span class="line"><span class="javascript">                element=<span class="built_in">document</span>.getElementById(<span class="string">&#x27;myimage&#x27;</span>)</span></span><br><span class="line"><span class="javascript">                <span class="keyword">if</span> (element.src.match(<span class="string">&quot;bulbon&quot;</span>))</span></span><br><span class="line">                &#123;</span><br><span class="line"><span class="javascript">                    element.src=<span class="string">&quot;pic_bulboff.gif&quot;</span>;</span></span><br><span class="line"><span class="javascript">                    alert(<span class="string">&quot;灯灭了&quot;</span>);</span></span><br><span class="line">                &#125;</span><br><span class="line"><span class="javascript">                <span class="keyword">else</span></span></span><br><span class="line">                &#123;</span><br><span class="line"><span class="javascript">                    element.src=<span class="string">&quot;pic_bulbon.gif&quot;</span>;</span></span><br><span class="line"><span class="javascript">                    alert(<span class="string">&quot;灯亮了&quot;</span>);</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"><span class="javascript">            <span class="function"><span class="keyword">function</span> <span class="title">callAndroid</span>(<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="handlebars"><span class="xml">                <span class="comment">&lt;!-- android是对象映射时设置的名称 --&gt;</span></span></span></span><br><span class="line">                alert(android.getPhoneBand());</span><br><span class="line">            &#125;</span><br><span class="line">        <span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">img</span> <span class="attr">id</span>=<span class="string">&quot;myimage&quot;</span></span></span><br><span class="line"><span class="tag">             <span class="attr">src</span>=<span class="string">&quot;pic_bulboff.gif&quot;</span> <span class="attr">width</span>=<span class="string">&quot;100&quot;</span> <span class="attr">height</span>=<span class="string">&quot;180&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">&quot;call_android&quot;</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">onclick</span>=<span class="string">&quot;callAndroid()&quot;</span>&gt;</span>调用Android方法<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>我这里将html文件和图片资源都放在了assets目录下，Android中访问assets目录下的文件使用<code>file:///android_asset/...</code>来获取assets目录下的文件</p>
+<a id="more"></a>
+
+<p>页面布局是这样的：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">LinearLayout</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:android</span>=<span class="string">&quot;http://schemas.android.com/apk/res/android&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:tools</span>=<span class="string">&quot;http://schemas.android.com/tools&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">&quot;match_parent&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_height</span>=<span class="string">&quot;match_parent&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:orientation</span>=<span class="string">&quot;vertical&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">tools:context</span>=<span class="string">&quot;.NativeCallJsActivity&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">LinearLayout</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">&quot;wrap_content&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">&quot;wrap_content&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_gravity</span>=<span class="string">&quot;center_horizontal&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:orientation</span>=<span class="string">&quot;horizontal&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:textAllCaps</span>=<span class="string">&quot;false&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">&quot;wrap_content&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">&quot;wrap_content&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:text</span>=<span class="string">&quot;loadUrl&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:id</span>=<span class="string">&quot;@+id/btn_load_url&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:textAllCaps</span>=<span class="string">&quot;false&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">&quot;wrap_content&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">&quot;wrap_content&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:text</span>=<span class="string">&quot;evaluateJavascript&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:id</span>=<span class="string">&quot;@+id/btn_evaluate&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:textAllCaps</span>=<span class="string">&quot;false&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">&quot;wrap_content&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">&quot;wrap_content&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:text</span>=<span class="string">&quot;both&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:id</span>=<span class="string">&quot;@+id/btn_both&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">FrameLayout</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">&quot;@+id/fl_web_view_container&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">&quot;match_parent&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">&quot;match_parent&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>这里我们采用动态添加WebView的方式，即不在xml中直接定义WebView(容易造成内存泄漏)，而是在xml中定义一个WebView容器，在代码中动态添加和删除WebView，在代码中如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">initView</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">//使用弱引用，防止内存泄漏</span></span><br><span class="line">    WeakReference&lt;Context&gt; weakContext = <span class="keyword">new</span> WeakReference&lt;&gt;((Context)<span class="keyword">this</span>);</span><br><span class="line">    webView = <span class="keyword">new</span> WebView(weakContext.get());</span><br><span class="line"></span><br><span class="line">    flWebViewContainer.addView(webView);</span><br><span class="line">    <span class="comment">//设置WebView与JS交互的权限</span></span><br><span class="line">    WebSettings settings = webView.getSettings();</span><br><span class="line">    settings.setJavaScriptEnabled(<span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//载入网页</span></span><br><span class="line">    webView.loadUrl(<span class="string">&quot;file:///android_asset/test.html&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>最后不要忘了在onDestroy中销毁WebView:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onDestroy</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>( webView!=<span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="comment">// 如果先调用destroy()方法，则会命中if (isDestroyed()) return;			</span></span><br><span class="line">        <span class="comment">// 这一行代码，需要先onDetachedFromWindow()，再destory()</span></span><br><span class="line">        ViewParent parent = webView.getParent();</span><br><span class="line">        <span class="keyword">if</span> (parent != <span class="keyword">null</span>) &#123;</span><br><span class="line">            ((ViewGroup) parent).removeView(webView);</span><br><span class="line">        &#125;</span><br><span class="line">        webView.stopLoading();</span><br><span class="line">        <span class="comment">// 退出时调用此方法，移除绑定的服务，否则某些特定系统会报错</span></span><br><span class="line">        webView.getSettings().setJavaScriptEnabled(<span class="keyword">false</span>);</span><br><span class="line">        webView.clearHistory();</span><br><span class="line">        webView.clearView();</span><br><span class="line">        webView.removeAllViews();</span><br><span class="line">        webView.destroy();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">super</span>.onDestroy();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="loadUrl"><a href="#loadUrl" class="headerlink" title="loadUrl"></a>loadUrl</h4><p>首先我们来看使用loadUrl来调用JS方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">webView.loadUrl(<span class="string">&quot;javascript:changeImage()&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>很简单，使用方法名调用即可，此方法的缺陷是没有完成后的回调</p>
+<h4 id="evaluateJavascript"><a href="#evaluateJavascript" class="headerlink" title="evaluateJavascript"></a>evaluateJavascript</h4><p>使用evaluateJavascript要比上面代码更简单，而且有方法回调，使用方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (version &gt;= Build.VERSION_CODES.KITKAT) &#123;</span><br><span class="line">    webView.evaluateJavascript(<span class="string">&quot;javascript:changeImage()&quot;</span>, <span class="keyword">new</span> ValueCallback&lt;String&gt;() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onReceiveValue</span><span class="params">(String value)</span> </span>&#123;</span><br><span class="line">            <span class="comment">//获取返回值，如果存在</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看出，这个方法是在Android4.4之后才引入的，因此如果需要使用该方法则需要minSdkVersion大于等于19，在执行完js方法后会执行ValueCallback中的onReceiveValue方法，完成回调操作。</p>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>上述两种方法都可以实现Android调用JS方法，但是后者比前者效率更高，并且前者不能很简单的获取到返回值，但是后者又有SDK版本的限制，因此现在一般推荐在高版本使用<code>evaluateJavascript</code>，低版本使用<code>loadUrl</code>，如下:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (version &lt; Build.VERSION_CODES.KITKAT) &#123;</span><br><span class="line">    webView.loadUrl(<span class="string">&quot;javascript:changeImage()&quot;</span>);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    webView.evaluateJavascript(<span class="string">&quot;javascript:changeImage()&quot;</span>, <span class="keyword">new</span> ValueCallback&lt;String&gt;() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onReceiveValue</span><span class="params">(String value)</span> </span>&#123;</span><br><span class="line">            <span class="comment">//获取返回值，如果存在</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>App调用JS方法演示如下：</p>
+<p><img src="https://riceeater.oss-cn-qingdao.aliyuncs.com/blog/WebView-App%E8%B0%83%E7%94%A8JS.gif"></p>
+<h3 id="JS调用APP原生方法"><a href="#JS调用APP原生方法" class="headerlink" title="JS调用APP原生方法"></a>JS调用APP原生方法</h3><p>JS调用原生方法有三种方式：</p>
+<ul>
+<li><code>WebView.addJavascriptInterface(Object obj,String name)</code></li>
+<li>复写<code>WebViewClient</code>的<code>shouldOverrideUrlLoading</code></li>
+<li>复写<code>WebViewChromeClient</code>的<code>onJsAlert()</code>、<code>onJsConfirm()</code>、<code>onJsPrompt()</code>方法拦截JS的<code>alert</code>、<code>confimr</code>、<code>prompt</code>方法</li>
+</ul>
+<p>HTML代码如下：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;utf-8&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">title</span>&gt;</span>js调用Android<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">            <span class="function"><span class="keyword">function</span> <span class="title">callAndroid</span>(<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="handlebars"><span class="xml">                <span class="comment">&lt;!-- android是对象映射时设置的名称 --&gt;</span></span></span></span><br><span class="line"><span class="javascript">                alert(<span class="string">&quot;获取到手机名称是&quot;</span>+android.getPhoneBand());</span></span><br><span class="line">            &#125;</span><br><span class="line">        <span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">&quot;call_android&quot;</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">onclick</span>=<span class="string">&quot;callAndroid()&quot;</span>&gt;</span>调用Android方法<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>这里有一个按钮，点击之后会调用<code>android.getPhoneBand()</code>方法(android这个元素是java代码中建立的对象映射)</p>
+<h4 id="addJavascriptInterface"><a href="#addJavascriptInterface" class="headerlink" title="addJavascriptInterface"></a>addJavascriptInterface</h4><p>要使用addJavaInterface，首先我们需要有一个类来扩展JS能力：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WebViewJsInterface</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String TAG = <span class="string">&quot;WebViewJsInterface&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> WeakReference&lt;Context&gt; weakReference;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">WebViewJsInterface</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">        weakReference = <span class="keyword">new</span> WeakReference&lt;&gt;(context);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@JavascriptInterface</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getPhoneBand</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        String result = android.os.Build.BRAND;</span><br><span class="line">        Toast.makeText(weakReference.get(),<span class="string">&quot;JS called Android By addJavascriptInterface~&quot;</span>,Toast.LENGTH_SHORT).show();</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意要在方法前加上注解<code>@JavascriptInterface</code></p>
+<p>将这个对象与WebView绑定：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//对WebView与JsInterface建立对象映射</span></span><br><span class="line">webView.addJavascriptInterface(<span class="keyword">new</span> WebViewJsInterface(<span class="keyword">this</span>),<span class="string">&quot;android&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>在这之后，在JS中使用android.xx()就可以调用原生方法了，点击页面上的按钮，可以看到在logcat中打印出获取到的手机品牌：Android</p>
+<p><strong>使用此方法可以很轻易地实现JS调用原生方法，不过有一个重大的问题，在Android4.2之前的版本，由于未要求使用<code>@JavascriptInterface</code>，会导致来自JS的恶意攻击</strong></p>
+<h4 id="shouldOverrideUrlLoading"><a href="#shouldOverrideUrlLoading" class="headerlink" title="shouldOverrideUrlLoading"></a>shouldOverrideUrlLoading</h4><p>使用复写WebViewClient的shouldOverrideUrlLoading方法，其本质是获取网页跳转链接，并判断是否拦截，代码如下，首先是HTML：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;utf-8&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">title</span>&gt;</span>js调用Android<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">            <span class="function"><span class="keyword">function</span> <span class="title">callAndroidByWebClient</span>(<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="handlebars"><span class="xml">                <span class="comment">&lt;!-- 定义好协议，跳转 --&gt;</span></span></span></span><br><span class="line"><span class="javascript">                <span class="built_in">document</span>.location = <span class="string">&quot;xylitolz://toastHello?arg=2000&quot;</span>;</span></span><br><span class="line">            &#125;</span><br><span class="line">        <span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">onclick</span>=<span class="string">&quot;callAndroidByWebClient()&quot;</span>&gt;</span>使用shouldOverrideUrlLoading调用Android方法<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>在Java代码中，使用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//设置WebViewClient</span></span><br><span class="line">webView.setWebViewClient(<span class="keyword">new</span> WebViewClient() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">shouldOverrideUrlLoading</span><span class="params">(WebView view, String url)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//判断Url</span></span><br><span class="line">        <span class="keyword">if</span>(TextUtils.isEmpty(url)) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        Uri uri = Uri.parse(url);</span><br><span class="line">        <span class="keyword">if</span>(uri.getScheme().equals(<span class="string">&quot;xylitolz&quot;</span>)) &#123;</span><br><span class="line">            <span class="comment">//url为定义好的开头为xytlitolZ的协议，则通过拦截</span></span><br><span class="line">            <span class="keyword">if</span>(uri.getAuthority().equals(<span class="string">&quot;toastHello&quot;</span>)) &#123;</span><br><span class="line">                <span class="comment">//区分协议</span></span><br><span class="line">                String arg = uri.getQueryParameter(<span class="string">&quot;arg&quot;</span>);</span><br><span class="line">                JsUtil.getInstance().toastHello(JsCallNativeActivity.<span class="keyword">this</span>,arg);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>注意Uri的schema不区分大小写，在Java代码中使用equals时需要特别注意</p>
+<p><strong>此方法调用过后JS很难获取到Android的返回结果，若要获取则需要使用loadUrl()的方式，将需要传递的值传给JS，略显繁琐</strong></p>
+<h4 id="onJsAlert、onJsConfirm、onJsPrompt"><a href="#onJsAlert、onJsConfirm、onJsPrompt" class="headerlink" title="onJsAlert、onJsConfirm、onJsPrompt"></a>onJsAlert、onJsConfirm、onJsPrompt</h4><p>这个方式是通过拦截JS的三个方法alert、confirm、prompt来实现JS调用原生方法的</p>
+<p>HTML如下：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;utf-8&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">title</span>&gt;</span>js调用Android<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">            <span class="function"><span class="keyword">function</span> <span class="title">callAndroidByWebViewChromeClient</span>(<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">                alert(<span class="string">&quot;WebViewChromeClient&quot;</span>);</span></span><br><span class="line">            &#125;</span><br><span class="line">        <span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;text-align:center;border: green solid 1px;&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">button</span> <span class="attr">style</span>=<span class="string">&quot;margin-top:10px;margin-bottom:10px;&quot;</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">onclick</span>=<span class="string">&quot;callAndroidByWebViewChromeClient()&quot;</span>&gt;</span>使用webViewChromeClient调用Android方法<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>java代码中使用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//设置WebView与JS交互的权限</span></span><br><span class="line">WebSettings settings = webView.getSettings();</span><br><span class="line">settings.setJavaScriptCanOpenWindowsAutomatically(<span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//设置响应alert、confirm、Prompt方法</span></span><br><span class="line">webView.setWebChromeClient(<span class="keyword">new</span> WebChromeClient() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onJsAlert</span><span class="params">(WebView view, String url, String message, <span class="keyword">final</span> JsResult result)</span> </span>&#123;</span><br><span class="line">        AlertDialog.Builder b = <span class="keyword">new</span> AlertDialog.Builder(JsCallNativeActivity.<span class="keyword">this</span>);</span><br><span class="line">        b.setTitle(<span class="string">&quot;Alert&quot;</span>);</span><br><span class="line">        b.setMessage(<span class="string">&quot;JS通过alert调用原生，参数是&quot;</span>+message);</span><br><span class="line">        b.setPositiveButton(android.R.string.ok, <span class="keyword">new</span> DialogInterface.OnClickListener() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(DialogInterface dialog, <span class="keyword">int</span> which)</span> </span>&#123;</span><br><span class="line">                result.confirm();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        b.setCancelable(<span class="keyword">false</span>);</span><br><span class="line">        b.create().show();</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>onJsAlert、onJsConfirm、onJsPrompt这三个WebChromeClient类的方法分别对应JS的alert、confirm、prompt方法</p>
+<p>当然，如果有需要可以在alert等方法中添加协议限制，我这里偷个懒就不写了。</p>
+<p>演示如下：</p>
+<p><img src="https://riceeater.oss-cn-qingdao.aliyuncs.com/blog/WebView-JS%E8%B0%83%E7%94%A8%E5%8E%9F%E7%94%9F.gif"></p>
+<h4 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h4><p>总的来说，这三种方法各有优劣，<strong>第一种在低版本上容易造成严重的安全漏洞，但胜在使用简单，可以应付较为简单的情景；第二种适用于不需要返回值的场景，缺点也在于获取返回值过于繁琐；第三种同样使用较为复杂，不过适用于大部分场景。</strong></p>
+<h3 id="总结-2"><a href="#总结-2" class="headerlink" title="总结"></a>总结</h3><p>那么本篇文章的所有内容就是这样了。所有代码地址在<a target="_blank" rel="noopener" href="https://github.com/riceeater/AndroidWebViewDemo">github</a>，欢迎指正~</p>
+<p>enjoy~</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/WebView/">WebView</a><a href="/tags/JS/">JS</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+  
+
+
+
+
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2020 小米粒
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

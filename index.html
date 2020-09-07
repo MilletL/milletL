@@ -1,0 +1,753 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>RiceEater的小小世界 | My Life&#39;s Getting Better.</title>
+
+  
+  <meta name="author" content="小米粒">
+  
+
+  
+
+  
+  <meta name="keywords" content="RiceEater 小米粒 riceeater.info">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  
+
+  <meta property="og:site_name" content="RiceEater的小小世界"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="RiceEater的小小世界" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+<meta name="generator" content="Hexo 5.1.1"></head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">RiceEater的小小世界</a>
+    </h1>
+    <p class="site-description">My Life&#39;s Getting Better.</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+        <li><a href="/plans">计划</a></li>
+      
+        <li><a href="/about">关于</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/articles/Hexo/hexo-install-failed/"><span>hexo安装失败的解决办法</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Hexo/hexo-install-failed/" rel="bookmark">
+        <time class="entry-date published" datetime="2019-02-25T14:22:31.000Z">
+          2019-02-25
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>电脑重装系统，所以要重新设置hexo，mac上一切都很顺利，但是在家里的windows电脑上可作了大难了，这里记录一下，以防以后出现类似问题。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm install -g cnpm --registry=https://registry.npm.taobao.org</span><br><span class="line">cnpm install hexo-cli -g</span><br></pre></td></tr></table></figure>
+
+<p>这是由于npm在国内不太稳定，可以使用阿里的镜像。</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/教程/">教程</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/hexo/">hexo</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/articles/Share/ChatExperience/"><span>聊天APP超多对话处理</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Share/ChatExperience/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-12-18T12:29:02.000Z">
+          2018-12-18
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p> 最近接手公司项目聊天部分的代码，发现有些问题，下面是优化的一些心得。有这么几个方面：</p>
+<ol>
+<li><strong>IM监听优化</strong></li>
+<li><strong>会话列表更新优化</strong></li>
+<li><strong>聊一聊缓存文件存储策略优化</strong></li>
+<li><strong>RecyclerView刷新策略优化</strong></li>
+</ol>
+<p><strong>注意，以下所有内容都基于用户好友数量极多(大于1000)的情况</strong></p>
+<h2 id="IM监听"><a href="#IM监听" class="headerlink" title="IM监听"></a>IM监听</h2><p>之前接手聊一聊之前，大略看了下整个云信监听，用到的有首页右上角的聊一聊入口、聊一聊页面、聊天页面，最早的做法（v1.1.0）是下图这样：</p>
+<p><img src="https://riceeater.oss-cn-qingdao.aliyuncs.com/share/chat_bugs.png" alt="chat_bugs"></p>
+        
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Android实战/">Android实战</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/articles/Java/Base/JavaGernericParadigm/"><span>Java基础--泛型</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Java/Base/JavaGernericParadigm/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-11-24T11:52:37.000Z">
+          2018-11-24
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>14年做开发，至今已有近4年了。越来越多地在进行需求开发，对于之前的一些概念性的东西或者说少用到的东西渐渐的有些遗忘了。打算从本篇开始把一些基础性的东西一点一点拾起来，工程量可能会很大，包括数据结构、基础算法、java基础等等的知识。一点点的进步日积月累也会有巨大的收获，好了，就从现在开始吧。</p>
+<h3 id="泛型是什么？"><a href="#泛型是什么？" class="headerlink" title="泛型是什么？"></a>泛型是什么？</h3><p>Java 泛型的参数只可以代表类，不能代表个别对象。由于 Java 泛型的类型参数之实际类型在编译时会被消除，所以无法在运行时得知其类型参数的类型。Java 编译器在编译泛型时会自动加入类型转换的编码，故运行速度不会因为使用泛型而加快。Java 允许对个别泛型的类型参数进行约束，包括以下两种形式（假设 T 是泛型的类型参数，C 是一般类、泛类，或是泛型的类型参数）：T 实现接口 I 。T 是 C ，或继承自 C 。一个泛型类不能实现Throwable接口。(以上定义来自<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E6%B3%9B%E5%9E%8B/4475207">百度百科</a>)</p>
+<p>Java中泛型是在JDK1.5之后引入，在1.5之前如果要实现泛型类的功能，就只能使用Object来进行强制转型。比如下面的例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Object b;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setB</span><span class="params">(Object b)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.b = b;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">getB</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> b;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//mainMethod</span></span><br><span class="line">A a = <span class="keyword">new</span> A();</span><br><span class="line">a.setB(<span class="string">&quot;String&quot;</span>);</span><br><span class="line">String b1 = (String)a.getB();</span><br><span class="line">Integer b2 = (Integer)a.getB();</span><br></pre></td></tr></table></figure>
+        
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Java知识体系/">Java知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Java基础/">Java基础</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/articles/Hexo/hexo-webhook/"><span>利用webHook实现hexo自动更新</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Hexo/hexo-webhook/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-10-10T12:56:22.000Z">
+          2018-10-10
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p><a href="/articles/Hexo/hexo-build/">上篇文章</a>中我们提到了利用github webhook来实现hexo博客的自动更新，现在我们就来实现这个功能。（ps:安装了宝塔面板的用户可以很方便的实现此功能，以下的所有实现基于你的VPS上安装了<a href="www.bt.cn">宝塔面板</a>）</p>
+<h3 id="安装宝塔WebHook"><a href="#安装宝塔WebHook" class="headerlink" title="安装宝塔WebHook"></a>安装宝塔WebHook</h3><p>登录你的宝塔面板，选中软件管理，在第二页找到宝塔WebHook 1.0，点击安装，过程大概需要几分钟，取决于你的VPS配置，耐心等待安装完毕。</p>
+<h3 id="配置宝塔WebHook"><a href="#配置宝塔WebHook" class="headerlink" title="配置宝塔WebHook"></a>配置宝塔WebHook</h3><p>安装完成后，点击宝塔WebHook 1.0右侧设置按钮，点击添加，新建Hook。</p>
+<p>名称可以随意起一个，执行脚本如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> /www/wwwroot/blog</span><br><span class="line">$ git pull</span><br></pre></td></tr></table></figure>
+
+<p>很简单，进入你的VPS下的博客目录，执行pull操作将代码更新到VPS上</p>
+<p>点击保存，完成hook的新增。</p>
+<p>这是可以看到我们新增的hook已经出现在列表里了，点击查看密钥可以看到hook的使用方法，这里就不在赘述</p>
+        
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/教程/">教程</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/hexo/">hexo</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/articles/Hexo/hexo-build/"><span>搬瓦工VPS搭建自己的Hexo博客</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Hexo/hexo-build/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-10-08T11:52:43.000Z">
+          2018-10-08
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>之前为了上一些不存在的网站，在<a target="_blank" rel="noopener" href="https://bwh1.net/">搬瓦工</a>上花费19.99刀买了一年VPS。最近感觉主机只用来FQ有些浪费，正好近来有写博客的需求，就在<a target="_blank" rel="noopener" href="https://www.namecheap.com/">NameCheap</a>上买了域名，准备搭建自己的博客系统。尝试了WordPress、Ghost等系统后，决定使用Hexo。下面就把自己搭建的过程和中途遇到的坑写下来，算是个存档。</p>
+<h3 id="服务器设置"><a href="#服务器设置" class="headerlink" title="服务器设置"></a>服务器设置</h3><p>在<a target="_blank" rel="noopener" href="https://bwh1.net/">搬瓦工</a>购买VPS后，通过网站右上角Client Area-Services-My Services可以看到自己购买的主机。通过KiviVM Control Panel可以对主机进行一些简单的操作，比如重装系统、更换机房等等(关于搬瓦工的详细内容，可以在<a target="_blank" rel="noopener" href="http://banwagong.cn/">搬瓦工中文网</a>进行了解)。</p>
+<p>进行服务器设置之前可以先进行系统的重装，我这里选择了centOS6，开始重装前，在Main controls里停掉当前主机，然后选择合适的linux发行版本，点击reload进行重装。几分钟后安装完成，记下root密码和SSH端口(一般是29962)。</p>
+<p>我这里顺带给主机安装了<a href="www.bt.cn">宝塔面板</a>，安装过程很简单，使用putty或者类似工具连接主机，跟官网文档走就可以，可能会有些耗时。安装宝塔成功后，登录宝塔面板，看自己需求安装LNMP或者单单安装Nginx。</p>
+<p>ps:安装完宝塔后宝塔的防火墙可能会拦截某些端口，如果安装完你发现你的ss不能使用，请在面板-安全中放行ss端口。</p>
+        
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/教程/">教程</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/hexo/">hexo</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/articles/Android/View/BannerView/"><span>Android轮播图-自定义无限滚动的广告Banner控件</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/View/BannerView/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-06-07T12:40:32.000Z">
+          2018-06-07
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>今天闲来无事，梳理一下关于Android中广告banner图的一些技巧。</p>
+<p>一般来说，我们的广告Banner要满足这样几个条件：</p>
+<ul>
+<li><code>Banner</code>单个Item无限循环</li>
+<li>自动滚动</li>
+<li>响应单独item点击事件</li>
+<li>触摸禁止滑动</li>
+<li>指示条</li>
+<li>画廊效果</li>
+</ul>
+<p>ok，下面我们就针对这几点一一来进行分析</p>
+<h3 id="Banner单个Item无限循环"><a href="#Banner单个Item无限循环" class="headerlink" title="Banner单个Item无限循环"></a>Banner单个Item无限循环</h3><p>首先我们要实现一个自动滚动和手动均可滚动的Banner，很显然，我们需要使用到<code>ViewPager</code>(当然也可以使用<code>RecyclerView</code>，不过我个人感觉在使用难度上，前者会小一点)。实现无限循环的方式有这样两种：</p>
+<h4 id="假无限"><a href="#假无限" class="headerlink" title="假无限"></a>假无限</h4><p>这种方法是在原数据队头队尾各新增一条数据，新的数据集首位为原数据末尾数据，其末尾为原数据首位数据，中间为原数据</p>
+<p>此循环<code>ViewPager</code>的思路是将第0位item与倒数第二位映射，将最后一位与第一位元素映射，在选中第0位或者最后一位时，设置为相应的位置。这种方法可以实现循环滚动，但是存在问题，重置<code>ViewPager</code>位置时不能使用切换动画，如果使用了自定义动画，切换会出现问题，因此该方式不作考虑。</p>
+        
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/自定义View/">自定义View</a><a href="/tags/Android实战/">Android实战</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/articles/Utils/InterviewExperience/"><span>我经历的一些Android面试题及答案</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Utils/InterviewExperience/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-05-29T12:29:02.000Z">
+          2018-05-29
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>最近在考虑换工作，连续面试了几家公司，这里整理一些比较有意思的面试题（普通面试题和算法题，本人算法基础比较薄，算法题不是强项）。</p>
+<h3 id="面试题"><a href="#面试题" class="headerlink" title="面试题"></a>面试题</h3><ol>
+<li><p>Java中static静态代码块的调用时机。</p>
+<p>Java中的静态变量和静态代码块是在类加载的时候就执行的，实例化对象时，先声明并实例化变量再执行构造函数。如果子类继承父类，则先执行父类的静态变量和静态代码块，再执行子类的静态变量和静态代码块。同样，接着在执行父类和子类非静态代码块和构造函数。</p>
+<p>注意：（静态）变量和（静态）代码块的也是有执行顺序的，与代码书写的顺序一致。在（静态）代码块中可以使用（静态）变量，但是被使用的（静态）变量必须在（静态）代码块前面声明。</p>
+<p> 最后给出执行步骤：</p>
+<p>1、父类静态变量和静态代码块（先声明的先执行）；</p>
+<p>2、子类静态变量和静态代码块（先声明的先执行）；</p>
+<p>3、父类的变量和代码块（先声明的先执行）；</p>
+<p>4、父类的构造函数；</p>
+<p>5、子类的变量和代码块（先声明的先执行）；</p>
+<p>6、子类的构造函数。</p>
+        
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/面试相关/">面试相关</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/面试经验/">面试经验</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/articles/Android/View/DraggingSortDemo/"><span>Android列表拖拽排序及禁止拖拽以及保存排序状态</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/View/DraggingSortDemo/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-05-25T12:15:55.000Z">
+          2018-05-25
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>今天来研究一下Android中拖拽排序的相关技术。我们知道，<code>RecyclerView</code>是一个十分强大的类，它可以实现<code>ListView</code>的所有功能，并且更易用。关于它的好处不必多说，懂的都懂。我们基于<code>RecyclerView</code>来完成一个可拖拽排序的列表，并且在拖拽之后保存列表状态，这一功能在开发需求中应该使用到的还是蛮多的。</p>
+<h3 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h3><p>开始这个功能之前，肯定是要先完成一部分知识储备。好了，开始学习~😳</p>
+<p><img src="https://riceeater.oss-cn-qingdao.aliyuncs.com/blog/%E5%B4%A9%E6%BA%83.png"></p>
+<p>首先，<code>RecyclerView</code>为我们提供了一个拖拽和滑动删除的帮助类，这个类位于<code>android.support.v7.widget.helper</code>包下，类名是<code>ItemTouchHelper</code>。我们若要使用<code>RecyclerView</code>的拖拽，可以复写这个类，将初始化好的对象与<code>RecyclerView</code>绑定。但其实<code>ItemTouchHelper</code>并非我们要关注的重点，因为一般我们只需要继承此类，用就可以了。那么我们真正去控制滑动和拖拽的类在哪呢？我们从<code>ItemTouchHelper</code>的构造方法可以看出一点端倪：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Creates an ItemTouchHelper that will work with the given Callback.</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     * You can attach ItemTouchHelper to a RecyclerView via</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@link</span> #attachToRecyclerView(RecyclerView)&#125;. Upon attaching, it will add an item decoration,</span></span><br><span class="line"><span class="comment">     * an onItemTouchListener and a Child attach / detach listener to the RecyclerView.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> callback The Callback which controls the behavior of this touch helper.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ItemTouchHelper</span><span class="params">(Callback callback)</span> </span>&#123;</span><br><span class="line">    mCallback = callback;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Android实战/">Android实战</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/articles/Utils/AndroidStudioPlugins/"><span>常用的Android Studio插件</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Utils/AndroidStudioPlugins/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-05-22T11:34:49.000Z">
+          2018-05-22
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>今天来介绍几款Android Studio常用的插件。</p>
+<h3 id="ButterKnifeZeleny"><a href="#ButterKnifeZeleny" class="headerlink" title="ButterKnifeZeleny"></a>ButterKnifeZeleny</h3><p>如果你的代码中使用了ButterKnife，那么你一定不能错过<a target="_blank" rel="noopener" href="https://github.com/avast/android-butterknife-zelezny">ButterKnifeZeleny</a>这款插件。这款插件的作用是帮助开发者快速生成诸如<code>@BindView</code>、<code>@onClick</code>等代码，减少重复劳动。</p>
+<p>要使用该插件，打开Android Studio的plugins，在搜索框中搜索并安装即可，安装后重启Studio。插件使用起来非常简单，在你需要使用的<code>R.layout.xxx</code>布局文件，鼠标选中布局文件名称，点击右键，选择Generate…，可以看到出现了Generate ButterKnife injections，点击该选项(或者你可以使用快捷键)。在出现的页面选择你要生成的变量，在这里可以修改变量名，选择是否绑定点击时间，是否创建ViewHolder等等。当然，别忘了，使用这个插件的前提是你已经在代码中集成了ButterKnife。</p>
+        
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/教程/">教程</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/开发工具/">开发工具</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/articles/Android/View/SuspensionBar/"><span>Android沉浸式状态栏、颜色渐变、副标题动画和TabLayout悬浮条</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/View/SuspensionBar/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-05-15T11:39:40.000Z">
+          2018-05-15
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>嘛，几天没学习，我浑身难受。</p>
+<p>今天把前段时间公司这边的几个需求放在一起总结了一下，有这样几个:</p>
+<ul>
+<li><strong>沉浸式状态栏(5.0以上)，并要求上部bar随着RecyclerView滑动变色</strong></li>
+<li><strong>RecyclerView悬浮条，与普通悬浮条不同的是悬浮条是一个可滑动的TabLayout</strong></li>
+<li><strong>副标题随着RecyclerView滑动动画上移或者动画下移</strong></li>
+</ul>
+<p>把这几个东西放一起来重新梳理一下吧，先上效果图：</p>
+<p><img src="https://riceeater.oss-cn-qingdao.aliyuncs.com/blog/%E8%87%AA%E5%AE%9A%E4%B9%89View-%E6%82%AC%E6%B5%AE%E6%9D%A1.gif"></p>
+<p>左边是Android4.1上的效果，右边是5.0以上效果。下面就一点点来分析这种效果是如何实现的。</p>
+        
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Android实战/">Android实战</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+
+<nav class="pagination">
+  
+  
+  <a href="/page/2/" class="pagination-next">下一页</a>
+  
+</nav>
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2020 小米粒
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

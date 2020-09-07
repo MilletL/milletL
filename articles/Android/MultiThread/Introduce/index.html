@@ -1,0 +1,166 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Android多线程-多线程初步，进程线程详解 | RiceEater的小小世界 | My Life&#39;s Getting Better.</title>
+
+  
+  <meta name="author" content="小米粒">
+  
+
+  
+  <meta name="description" content="从这一部分我们开始学习Android的多线程，在这之前要搞清楚两个概念，进程和线程。
+Android启动一个应用程序时，若该应用程序无其他组件运行，那么系统会为这个应用程序启动一个新的linux进程，并在这个进程中默认启动一个UI线程(主线程)。默认情况下，同一应用程序的所有组件都在同一进程的主线程中运行。如果应用程序组件启动，并且已经存在该应用程序的进程（因为应用程序中的其它组件已经启动），则组件将在该进程中启动，并使用相同的主线程。但是，您可以通过设置让应用程序中的不同组件分别在不同的进程中运行，并且可以为任何进程创建其它线程。接下来详细讲述进程和线程。
+进程(Process)每个App在启动前必须先创建一个进程，该进程是由Zygote fork出来的，进程具有独立的资源空间，用于承载App上运行的各种Activity/Service等组件。大多数情况一个App就运行在一个进程中，除非在AndroidManifest.xml中配置Android:process属性，或通过native代码fork进程。
+线程默认每个Android应用程序只会有一个线程(UI线程，即主线程)，主线程负责该应用程序UI界面的显示、更新、控件交互等等，因此一些耗时操作(网络访问、下载操作、查询数据库等等)不可以放在主线程中进行，以免阻塞主线程。
+ps:Android规定，只有在UI线程中才能进行UI的更新操作。">
+  
+
+  
+  <meta name="keywords" content="RiceEater 小米粒 riceeater.info">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="Android多线程-多线程初步，进程线程详解"/>
+
+  <meta property="og:site_name" content="RiceEater的小小世界"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="RiceEater的小小世界" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+<meta name="generator" content="Hexo 5.1.1"></head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">RiceEater的小小世界</a>
+    </h1>
+    <p class="site-description">My Life&#39;s Getting Better.</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+        <li><a href="/plans">计划</a></li>
+      
+        <li><a href="/about">关于</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>Android多线程-多线程初步，进程线程详解</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/MultiThread/Introduce/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-04-22T08:31:02.000Z">
+          2018-04-22
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>从这一部分我们开始学习Android的多线程，在这之前要搞清楚两个概念，进程和线程。</p>
+<p>Android启动一个应用程序时，若该应用程序无其他组件运行，那么系统会为这个应用程序启动一个新的linux进程，并在这个进程中默认启动一个UI线程(主线程)。默认情况下，同一应用程序的所有组件都在同一进程的主线程中运行。如果应用程序组件启动，并且已经存在该应用程序的进程（因为应用程序中的其它组件已经启动），则组件将在该进程中启动，并使用相同的主线程。但是，您可以通过设置让应用程序中的不同组件分别在不同的进程中运行，并且可以为任何进程创建其它线程。接下来详细讲述进程和线程。</p>
+<h3 id="进程-Process"><a href="#进程-Process" class="headerlink" title="进程(Process)"></a>进程(Process)</h3><p>每个App在启动前必须先创建一个进程，该进程是由Zygote fork出来的，进程具有独立的资源空间，用于承载App上运行的各种Activity/Service等组件。大多数情况一个App就运行在一个进程中，除非在AndroidManifest.xml中配置Android:process属性，或通过native代码fork进程。</p>
+<h3 id="线程"><a href="#线程" class="headerlink" title="线程"></a>线程</h3><p>默认每个Android应用程序只会有一个线程(UI线程，即主线程)，主线程负责该应用程序UI界面的显示、更新、控件交互等等，因此一些耗时操作(网络访问、下载操作、查询数据库等等)不可以放在主线程中进行，以免阻塞主线程。</p>
+<p>ps:Android规定，只有在UI线程中才能进行UI的更新操作。</p>
+<a id="more"></a>
+
+<p>既然Android只能在UI线程中操作UI控件，而且不能在主线程中进行耗时操作，那么问题就来了，如果我们访问网络获取数据后需要在UI上进行展示，那么我们要怎么做呢？创建一个子线程访问网络，在数据获取完成中，怎样通知主线程进行UI更新呢，这就涉及到我们要讲的多线程通信了。</p>
+<h3 id="多线程通信"><a href="#多线程通信" class="headerlink" title="多线程通信"></a>多线程通信</h3><p>要进行多线程通信，Android中有这样几种方式：</p>
+<ol>
+<li><strong>activity.runOnUiThread(Runnable runnable);</strong> Activity中的方法，在子线程中调用，可以在方法内进行UI的更新操作。</li>
+<li><strong>view.post(Runnable runnable); view.postDelayed(Runnable runnable,long delayMillis);</strong> View中的方法，进行UI操作，或者延迟后进行UI操作</li>
+<li><strong>BroadCast结合BroadCastReceiver</strong> 使用Android广播机制，在子线程中发出更新广播，在主线程中接收该广播并进行相应操作，使用的并不多，了解即可</li>
+<li><strong>AsyncTask</strong> 使用AsyncTask开启异步任务在子线程中进行UI的更新****</li>
+<li><strong>Handler</strong> 使用Handler进行线程间通信从而达到子线程更新UI的目的</li>
+</ol>
+<p>接下来一段时间，我们就来详细讲解下使用Handler进行线程间通信的方法，以及Handler的原理，以及HanderTread和AsyncTask的使用等等，敬请期待~</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Android多线程通信/">Android多线程通信</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+  
+
+
+
+
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2020 小米粒
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Android多线程-Handler的简单使用 | RiceEater的小小世界 | My Life&#39;s Getting Better.</title>
+
+  
+  <meta name="author" content="小米粒">
+  
+
+  
+  <meta name="description" content="下面我们就来讲解Handler的简单使用，我们实现一个模拟下载过程的操作，并将下载进度更新到进度条和TextView中，那么事不宜迟，我们马上开始。
+我们先来总结下使用Handler的步骤：
+
+创建Hanlder对象，并在handleMessage方法中完成逻辑代码
+创建子线程，在子线程中创建Message对象，使用handler.post方法将消息发送给消息队列(MessageQueue)
+handler收到消息，并调用handleMessage方法完成通信(本质上是Looper轮询从MessageQueue中取出消息，并将其发送给Message的target，也就是发送给了handler)
+
+创建Handler对象上代码：
+1234567891011/** * 第一步，主线程中创建Handler并在handleMessage方法中处理相应逻辑 */ private Handler handler = new Handler() &amp;#123;    @Override    public void handleMessage(Message msg) &amp;#123;    	super.handleMessage(msg);        //这里完成更新UI的操作        //do something    &amp;#125;&amp;#125;;
+
+Handler的创建还有其他的方法，比如传入一个Callback对象的构造方法等等，不一而论， 这里handleMessage方法主要是用来处理子线程中传递出来的消息">
+  
+
+  
+  <meta name="keywords" content="RiceEater 小米粒 riceeater.info">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="Android多线程-Handler的简单使用"/>
+
+  <meta property="og:site_name" content="RiceEater的小小世界"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="RiceEater的小小世界" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+<meta name="generator" content="Hexo 5.1.1"></head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">RiceEater的小小世界</a>
+    </h1>
+    <p class="site-description">My Life&#39;s Getting Better.</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+        <li><a href="/plans">计划</a></li>
+      
+        <li><a href="/about">关于</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>Android多线程-Handler的简单使用</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/MultiThread/Handler-1/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-04-23T12:35:47.000Z">
+          2018-04-23
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>下面我们就来讲解Handler的简单使用，我们实现一个模拟下载过程的操作，并将下载进度更新到进度条和TextView中，那么事不宜迟，我们马上开始。</p>
+<p>我们先来总结下使用Handler的步骤：</p>
+<ol>
+<li>创建Hanlder对象，并在handleMessage方法中完成逻辑代码</li>
+<li>创建子线程，在子线程中创建Message对象，使用handler.post方法将消息发送给消息队列(MessageQueue)</li>
+<li>handler收到消息，并调用handleMessage方法完成通信(本质上是Looper轮询从MessageQueue中取出消息，并将其发送给Message的target，也就是发送给了handler)</li>
+</ol>
+<h3 id="创建Handler对象"><a href="#创建Handler对象" class="headerlink" title="创建Handler对象"></a>创建Handler对象</h3><p>上代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 第一步，主线程中创建Handler并在handleMessage方法中处理相应逻辑</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"> <span class="keyword">private</span> Handler handler = <span class="keyword">new</span> Handler() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;</span><br><span class="line">    	<span class="keyword">super</span>.handleMessage(msg);</span><br><span class="line">        <span class="comment">//这里完成更新UI的操作</span></span><br><span class="line">        <span class="comment">//do something</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>Handler的创建还有其他的方法，比如传入一个Callback对象的构造方法等等，不一而论， 这里handleMessage方法主要是用来处理子线程中传递出来的消息</p>
+<a id="more"></a>
+
+<h3 id="创建子线程"><a href="#创建子线程" class="headerlink" title="创建子线程"></a>创建子线程</h3><p>Android中创建子线程的方法有很多，我这里使用了一种最常见的方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//创建子线程</span></span><br><span class="line">downloadThread = <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">//线程结束标志，activity销毁后不再执行线程内代码</span></span><br><span class="line">        <span class="keyword">if</span>(!destroyThread) &#123;</span><br><span class="line">            <span class="comment">//do something</span></span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>;i &lt; <span class="number">100</span>;i++) &#123;</span><br><span class="line">                progress++;</span><br><span class="line">                <span class="comment">//模拟耗时操作</span></span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    Thread.sleep(<span class="number">100</span>);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">                Message message = Message.obtain();</span><br><span class="line">                message.what = MESSAGE_WHAT_UPDATE_PROGRESS;</span><br><span class="line">                message.obj = progress;</span><br><span class="line">                handler.sendMessage(message);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>可以看到上述代码中，主要是模拟了耗时操作，每100ms发出一次消息，消息体中what主要用于区分消息类型，obj携带消息内容，最后调用handler.sendMessage方法将其发出。其中Message的初始化有多种方式，常用的有三种：</p>
+<ul>
+<li>new Message();</li>
+<li>Message.obtain();</li>
+<li>Handler.obtainMessage();</li>
+</ul>
+<p>其中我们经常使用的是后两者，而不推荐使用前者，这主要是因为，后两者是从一个可回收的对象池中获取Message对象，比重新new一个Message对象性能更好。</p>
+<h3 id="Handler对象处理消息"><a href="#Handler对象处理消息" class="headerlink" title="Handler对象处理消息"></a>Handler对象处理消息</h3><p>Looper取到消息后会根据Message的target对象将消息发送给相应的Handler(hander.sendMessage方法会将自身设为该Message的target)，然后调用handlerMessage进行处理：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">handler = <span class="keyword">new</span> Handler() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.handleMessage(msg);</span><br><span class="line">        <span class="comment">//这里完成更新UI的操作</span></span><br><span class="line">        <span class="keyword">if</span>(msg != <span class="keyword">null</span> &amp;&amp; msg.what == MESSAGE_WHAT_UPDATE_PROGRESS) &#123;</span><br><span class="line">            <span class="keyword">int</span> progress = (<span class="keyword">int</span>) msg.obj;</span><br><span class="line">            String value = <span class="string">&quot;&quot;</span>;</span><br><span class="line">            <span class="keyword">if</span>(progress &lt;= MAX_PROGRESS) &#123;</span><br><span class="line">                progressBar.setProgress(progress);</span><br><span class="line">                value += <span class="string">&quot;第一进度条:&quot;</span>+progress+<span class="string">&quot;%&quot;</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span>(progress*<span class="number">2</span> &lt;= MAX_PROGRESS) &#123;</span><br><span class="line">                progressBar.setSecondaryProgress(progress*<span class="number">2</span>);</span><br><span class="line">                value += <span class="string">&quot; 第二进度条:&quot;</span>+progress*<span class="number">2</span>+<span class="string">&quot;%&quot;</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                value += <span class="string">&quot; 第二进度条:&quot;</span>+MAX_PROGRESS+<span class="string">&quot;%&quot;</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            tvProgressValue.setText(value);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>整个Handler的使用流程就是这样了，下面是demo的执行画面：</p>
+<p><img src="https://riceeater.oss-cn-qingdao.aliyuncs.com/blog/%E5%A4%9A%E7%BA%BF%E7%A8%8B-%E6%A8%A1%E6%8B%9F%E8%BF%9B%E5%BA%A6%E6%9D%A1.gif" alt="模拟下载进度条demo"></p>
+<center>模拟下载进度条demo</center>
+
+<p>这里就是一个完整的Handler使用的流程了，其中涉及到了一些名词，如Message、MessageQueue、Looper等，我们会在后面详解Hanlder中进行讲解，那么这篇文章就到这里，接下来敬请期待~</p>
+<p>该篇文章<a target="_blank" rel="noopener" href="https://github.com/riceeater/AndroidMultiThreadTest">github地址</a>，欢迎下载查看~</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Android多线程通信/">Android多线程通信</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+  
+
+
+
+
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2020 小米粒
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

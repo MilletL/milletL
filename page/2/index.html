@@ -1,0 +1,738 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>第 2 页 | RiceEater的小小世界 | My Life&#39;s Getting Better.</title>
+
+  
+  <meta name="author" content="小米粒">
+  
+
+  
+
+  
+  <meta name="keywords" content="RiceEater 小米粒 riceeater.info">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  
+
+  <meta property="og:site_name" content="RiceEater的小小世界"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="RiceEater的小小世界" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+<meta name="generator" content="Hexo 5.1.1"></head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">RiceEater的小小世界</a>
+    </h1>
+    <p class="site-description">My Life&#39;s Getting Better.</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+        <li><a href="/plans">计划</a></li>
+      
+        <li><a href="/about">关于</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/articles/Android/View/VerificationCodeView/"><span>Android自定义View-仿滴滴自定义验证码输入框</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/View/VerificationCodeView/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-05-09T11:46:08.000Z">
+          2018-05-09
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>之前公司有过需求，要求做一个类似滴滴打车输入验证码的页面，长这样：</p>
+<p><img src="https://riceeater.oss-cn-qingdao.aliyuncs.com/blog/%E8%87%AA%E5%AE%9A%E4%B9%89View-%E9%AA%8C%E8%AF%81%E7%A0%81%E4%BB%BF%E6%BB%B4%E6%BB%B4.gif"></p>
+<p>来分析一下这个验证码部分，实现这样一个自定义View，首先，要区分单个验证码选中状态和未选中状态，并且光标悬停在选中的验证码中心，其次， 每次输入文字后需要依次显示在每个单独的验证码容器中，还有诸如自定义验证码选中状态、清空输入验证码等等。受到博文<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_33553515/article/details/73344155">Android 自定义View之带密码模式的正方形验证码输入框</a>的启发，我决定使用继承RelativeLayout的方式来完成这个自定义View。</p>
+<h3 id="实现思路"><a href="#实现思路" class="headerlink" title="实现思路"></a>实现思路</h3><p><strong>笔者这里决定继承RelativeLayout来实现自定义验证码的功能。显示验证码可以使用几个TextView，这里需要将TextView统一管理，所以还需要一个TextView数组。有光标，那自然而然的就想到了EditText，可以使用一个透明背景的EditText。几个验证码可以使用TextView以一定的规则进行排列，通过监听EditText的输入，拦截到输入字符，并将字符传递给TextView数组，并将EditText置为空，同时重设TextView选中状态，移动EditText光标。笔者这里采用给EditText设置paddingLeft的方式来实现光标的移动，当然，需要经过一些计算。OK，大概思路就是这样了，具体的代码我们继续看下面的。</strong></p>
+        
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/自定义View/">自定义View</a><a href="/tags/Android实战/">Android实战</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/articles/Android/WebView/WebViewWithJs/"><span>Android原生与JavaScript交互详解</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/WebView/WebViewWithJs/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-05-08T12:13:54.000Z">
+          2018-05-08
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>这几天公司项目里提到了原生与HTML交互的需求，之前一直用的前人封装好的工具类。今天打算好好梳理下Android中原生与网页交互的方法和注意事项。</p>
+<p>谈到Android与HTML交互，其本质还是WebView与JavaScript的交互过程。这就分为两种情况：</p>
+<ul>
+<li>WebView或者说App调用JS方法</li>
+<li>JS调用APP的原生方法</li>
+</ul>
+<p>我们就从这两大方面逐步讲解这两种情况的实现。</p>
+<h3 id="App调用JS方法"><a href="#App调用JS方法" class="headerlink" title="App调用JS方法"></a>App调用JS方法</h3><p>Android原生调用JS方法有两种方式：</p>
+<ul>
+<li>WebView.loadUrl(String url)</li>
+<li>WebView.evaluateJavascript(String script, ValueCallback&lt;String&gt; resultCallback)</li>
+</ul>
+<p>我们用一个例子来分别讲述这两种方式的用法：</p>
+<p>HTML代码如下(使用了菜鸟教程的范例)：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;utf-8&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">title</span>&gt;</span>菜鸟教程(runoob.com)<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">            <span class="function"><span class="keyword">function</span> <span class="title">changeImage</span>(<span class="params"></span>)</span></span></span><br><span class="line">            &#123;</span><br><span class="line"><span class="javascript">                element=<span class="built_in">document</span>.getElementById(<span class="string">&#x27;myimage&#x27;</span>)</span></span><br><span class="line"><span class="javascript">                <span class="keyword">if</span> (element.src.match(<span class="string">&quot;bulbon&quot;</span>))</span></span><br><span class="line">                &#123;</span><br><span class="line"><span class="javascript">                    element.src=<span class="string">&quot;pic_bulboff.gif&quot;</span>;</span></span><br><span class="line"><span class="javascript">                    alert(<span class="string">&quot;灯灭了&quot;</span>);</span></span><br><span class="line">                &#125;</span><br><span class="line"><span class="javascript">                <span class="keyword">else</span></span></span><br><span class="line">                &#123;</span><br><span class="line"><span class="javascript">                    element.src=<span class="string">&quot;pic_bulbon.gif&quot;</span>;</span></span><br><span class="line"><span class="javascript">                    alert(<span class="string">&quot;灯亮了&quot;</span>);</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"><span class="javascript">            <span class="function"><span class="keyword">function</span> <span class="title">callAndroid</span>(<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="handlebars"><span class="xml">                <span class="comment">&lt;!-- android是对象映射时设置的名称 --&gt;</span></span></span></span><br><span class="line">                alert(android.getPhoneBand());</span><br><span class="line">            &#125;</span><br><span class="line">        <span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">img</span> <span class="attr">id</span>=<span class="string">&quot;myimage&quot;</span></span></span><br><span class="line"><span class="tag">             <span class="attr">src</span>=<span class="string">&quot;pic_bulboff.gif&quot;</span> <span class="attr">width</span>=<span class="string">&quot;100&quot;</span> <span class="attr">height</span>=<span class="string">&quot;180&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">&quot;call_android&quot;</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">onclick</span>=<span class="string">&quot;callAndroid()&quot;</span>&gt;</span>调用Android方法<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>我这里将html文件和图片资源都放在了assets目录下，Android中访问assets目录下的文件使用<code>file:///android_asset/...</code>来获取assets目录下的文件</p>
+        
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/WebView/">WebView</a><a href="/tags/JS/">JS</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/articles/Android/View/EventDispatch-3/"><span>Android View相关-事件分发机制流程</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/View/EventDispatch-3/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-05-06T08:45:08.000Z">
+          2018-05-06
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>经过前两篇的学习，相信已经对事件分发的一个流程产生了一定的理解(才怪)，那么这一章我们来看看整个事件分发从Activity到被消费的过程。好了，脑袋放空，我们开始。</p>
+<p><img src="http://p6z0jdp7l.bkt.clouddn.com/joke/v2-57afdd0ec7d9578d4579dba2d2848407_hd.jpg"></p>
+<h3 id="Activity中的View结构"><a href="#Activity中的View结构" class="headerlink" title="Activity中的View结构"></a>Activity中的View结构</h3><p>我们在这里先插一嘴Activity中的View结构。在开发过程中，我们通常使用setContentView来设置Activity的视图，Android中可见页面都是附着于窗口也就是Window上的，而DecorView是Window的最顶层视图。在Android Framework层，与窗口处理有关的类，主要是Window类和其实现类PhoneWindow，DecorView则是PhoneWindow的内部类，继承了FrameLayout。</p>
+        
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/面试基础/">面试基础</a><a href="/tags/事件分发机制/">事件分发机制</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/articles/Android/View/EventDispatch-2/"><span>Android View相关-事件分发机制详解-ViewGroup</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/View/EventDispatch-2/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-05-05T08:09:48.000Z">
+          2018-05-05
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>上一篇文章中，我们从一个小例子和源码角度解析了View的事件分发过程，我们知道其执行流程是dispathcEvent -&gt; onTouch -&gt; onTouchEvent，在onTouchEvent中会经过判断处理OnClick事件和OnLongClick事件。那么本文我们来探讨下View的子类ViewGroup的事件分发流程。</p>
+<h3 id="举个栗子"><a href="#举个栗子" class="headerlink" title="举个栗子"></a>举个栗子</h3><p>这里使用一个自定义LinearLayout和一个自定义Button，自定义Button就是上一篇文章中的button，贴出代码：</p>
+        
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/面试基础/">面试基础</a><a href="/tags/事件分发机制/">事件分发机制</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/articles/Android/View/EventDispatch-1/"><span>Android View相关-事件分发机制详解-View</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/View/EventDispatch-1/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-05-02T11:58:11.000Z">
+          2018-05-02
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>这篇文章我们来探究下Android中关于事件分发机制的一些细节和流程，由于这部分源码比较繁杂，拆开来讲，本文只探究View的事件分发流程，ViewGroup留到之后再说，在分析完这两者的事件分发机制之后我们来对Android的时间分发机制进行总结。那么本文就从View的子类Button来着手分析事件分发的流程，之后我们再从源码角度分析具体实现过程。</p>
+<h3 id="举个栗子"><a href="#举个栗子" class="headerlink" title="举个栗子"></a>举个栗子</h3><p>这里用一个很简单的小例子来演示View中dispatchTouchEvent、onTouchEvent、TouchListener的执行顺序，继承自Button的TestButton代码很简单，几个log：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onTouchEvent</span><span class="params">(MotionEvent event)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">switch</span> (event.getAction()) &#123;</span><br><span class="line">        <span class="keyword">case</span> MotionEvent.ACTION_DOWN:</span><br><span class="line">            Log.e(TAG, <span class="string">&quot;onTouchEvent ACTION_DOWN&quot;</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> MotionEvent.ACTION_MOVE:</span><br><span class="line">            Log.e(TAG, <span class="string">&quot;onTouchEvent ACTION_MOVE&quot;</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> MotionEvent.ACTION_UP:</span><br><span class="line">            Log.e(TAG, <span class="string">&quot;onTouchEvent ACTION_UP&quot;</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">default</span>:</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">super</span>.onTouchEvent(event);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">dispatchTouchEvent</span><span class="params">(MotionEvent event)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">switch</span> (event.getAction()) &#123;</span><br><span class="line">        <span class="keyword">case</span> MotionEvent.ACTION_DOWN:</span><br><span class="line">            Log.e(TAG, <span class="string">&quot;dispatchTouchEvent ACTION_DOWN&quot;</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> MotionEvent.ACTION_MOVE:</span><br><span class="line">            Log.e(TAG, <span class="string">&quot;dispatchTouchEvent ACTION_MOVE&quot;</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> MotionEvent.ACTION_UP:</span><br><span class="line">            Log.e(TAG, <span class="string">&quot;dispatchTouchEvent ACTION_UP&quot;</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">default</span>:</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">super</span>.dispatchTouchEvent(event);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Activity中设置onTouchListener，也是几个log：</p>
+        
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/面试基础/">面试基础</a><a href="/tags/事件分发机制/">事件分发机制</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/articles/Android/View/CommonMethod/"><span>Android View相关-View的常用方法及使用区别</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/View/CommonMethod/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-05-01T12:20:25.000Z">
+          2018-05-01
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>经过上一章的摸索，我们已经了解了Android中View的绘制流程分别是measure、layout和draw，那么对Android有一些了解的话，一定知道View中有这样几个方法invalidate、postInvalidate以及requestLayout，我们知道这些方法调用后会触发View的重绘(不一定正确的说法)，那么它们的用法是什么，有什么区别以及使用时候有哪些注意事项，这就是我们这一篇文章力求弄明白的东西，好了，废话不多说，开始今天的分析。</p>
+<h3 id="invalidate"><a href="#invalidate" class="headerlink" title="invalidate"></a>invalidate</h3><p>我们从View源码中追本溯源，可以看到在View中方法的调用情况是这样的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 使当前View失效，若View是可见的那么onDraw方法会在未来的某个时间点被调用</span></span><br><span class="line"><span class="comment"> * 该方法必须在UI线程被调用，若需要在非UI线程调用，调用postInvalidate</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">invalidate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    invalidate(<span class="keyword">true</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 这个方法是invalidate整整产生作用的地方，一个invalidate请求会将绘制缓存设为失效</span></span><br><span class="line"><span class="comment"> * 不过这个方式可以设置参数为false来禁止绘制缓存失效</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">invalidate</span><span class="params">(<span class="keyword">boolean</span> invalidateCache)</span> </span>&#123;</span><br><span class="line">    invalidateInternal(<span class="number">0</span>, <span class="number">0</span>, mRight - mLeft, mBottom - mTop, invalidateCache, <span class="keyword">true</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">invalidateInternal</span><span class="params">(<span class="keyword">int</span> l, <span class="keyword">int</span> t, <span class="keyword">int</span> r, <span class="keyword">int</span> b, <span class="keyword">boolean</span> invalidateCache,</span></span></span><br><span class="line"><span class="function"><span class="params">                        <span class="keyword">boolean</span> fullInvalidate)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">if</span> ((mPrivateFlags &amp; (PFLAG_DRAWN | PFLAG_HAS_BOUNDS)) == (PFLAG_DRAWN | PFLAG_HAS_BOUNDS)</span><br><span class="line">        || (invalidateCache &amp;&amp; (mPrivateFlags &amp; PFLAG_DRAWING_CACHE_VALID) == PFLAG_DRAWING_CACHE_VALID)</span><br><span class="line">        || (mPrivateFlags &amp; PFLAG_INVALIDATED) != PFLAG_INVALIDATED</span><br><span class="line">        || (fullInvalidate &amp;&amp; isOpaque() != mLastIsOpaque)) &#123;</span><br><span class="line">        <span class="comment">// Propagate the damage rectangle to the parent view.</span></span><br><span class="line">        <span class="keyword">final</span> AttachInfo ai = mAttachInfo;</span><br><span class="line">        <span class="keyword">final</span> ViewParent p = mParent;</span><br><span class="line">        <span class="keyword">if</span> (p != <span class="keyword">null</span> &amp;&amp; ai != <span class="keyword">null</span> &amp;&amp; l &lt; r &amp;&amp; t &lt; b) &#123;</span><br><span class="line">            <span class="keyword">final</span> Rect damage = ai.mTmpInvalRect;</span><br><span class="line">            <span class="comment">//刷新区域</span></span><br><span class="line">            damage.set(l, t, r, b);</span><br><span class="line">            <span class="comment">//调用父控件的invalidateChild方法</span></span><br><span class="line">            p.invalidateChild(<span class="keyword">this</span>, damage);</span><br><span class="line">        &#125;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/面试基础/">面试基础</a><a href="/tags/View绘制流程/">View绘制流程</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/articles/Android/View/DrawingProcess/"><span>Android View相关-View的绘制流程浅析</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/View/DrawingProcess/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-04-30T07:05:00.000Z">
+          2018-04-30
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>从本章节开始，我们来共同学习下Android中比较重要的View相关知识，这一节我们先来看View的绘制流程。</p>
+<p>我们知道，Android中的任何一个布局、控件，其最终都会直接或者间接地继承View类(ViewGroup最终也继承了View)，也就是说所有相关的控件或者布局都会使用同样的绘制流程。我们知道Android绘制流程的起点是在ViewRootImpl类的performTraversals()方法。这个方法主要作用是根据之前设置状态来判断是否需要重新计算视图大小(Measure)，是否需要重新放置视图位置(layout)，以及是否需要重新绘制View(draw)。这个方法里有巨量的代码和逻辑，详读下来太过伤神，我们删减代码看下这个类的核心内容：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">performTraversals</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">//获取了尺寸规格，这是一个32位的int值，前两位代表测量模式(SpecMode)，后30位代表数值(SpecSize)，</span></span><br><span class="line">    </span><br><span class="line">	<span class="keyword">int</span> childWidthMeasureSpec = getRootMeasureSpec(mWidth, lp.width);</span><br><span class="line">    <span class="keyword">int</span> childHeightMeasureSpec = getRootMeasureSpec(mHeight, lp.height);</span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">//后续所有View的MeasureSpec都是从这里来的</span></span><br><span class="line">    mView.measure(childWidthMeasureSpec, childHeightMeasureSpec);</span><br><span class="line">    ...</span><br><span class="line">    mView.layout(<span class="number">0</span>, <span class="number">0</span>, host.getMeasuredWidth(), host.getMeasuredHeight());</span><br><span class="line">    ...</span><br><span class="line">    mView.draw(canvas);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，这里通过performTraversals()来判断是否对控件进行测量放置绘制等等，与View绘制过程相关的几个重要步骤有measure(测量)、layout(位置)、draw(绘制)，下面我们就这三个步骤一一来进行讲解。</p>
+        
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/面试基础/">面试基础</a><a href="/tags/View绘制流程/">View绘制流程</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/articles/Android/MultiThread/IntentService/"><span>Android多线程-IntentService的使用以及原理浅析</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/MultiThread/IntentService/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-04-28T07:18:24.000Z">
+          2018-04-28
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>上一章我们学习了HandlerThread，这一章我们来认识一下Android多线程通信常用的最后一个类IntentService。顾名思义，IntentService是一个Service的子类，其本质还是一个服务，不过它与它的父类还是有一些区别的，下面我们就来详细讲一下。</p>
+<h3 id="IntentService与Service的区别"><a href="#IntentService与Service的区别" class="headerlink" title="IntentService与Service的区别"></a>IntentService与Service的区别</h3><ul>
+<li><em>IntentService是Service的子类，同样需要在AndroidManifest文件中注册</em></li>
+<li><em>IntentService可以在其onHandleIntent方法中执行异步操作，Service若要执行异步操作需要开辟子线程</em></li>
+<li><em>IntentService不使用bindService的方式启动，因为使用bindService后其异步方法不会执行，且内部HandlerThread不会初始化</em></li>
+<li><em>IntentService不需要执行stop或者stopSelf方法来关闭，在异步任务执行完毕后，其内部会自动调用stopSelf</em></li>
+<li><em>IntentService是串行模式，放入IntentService中执行的任务会依次执行，全部执行完毕后销毁自身</em></li>
+</ul>
+<h3 id="IntentService的简单使用"><a href="#IntentService的简单使用" class="headerlink" title="IntentService的简单使用"></a>IntentService的简单使用</h3><p>IntentService的使用十分简单，分为下面几个步骤：</p>
+        
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Android多线程通信/">Android多线程通信</a><a href="/tags/Service/">Service</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/articles/Android/MultiThread/HandlerThread/"><span>Android多线程-HandlerThread的简单使用与剖析</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/MultiThread/HandlerThread/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-04-26T11:49:43.000Z">
+          2018-04-26
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>前面我们讲到，Android中子线程与主线程通信我们主要用到Handler，在一些轻量级的需求上，可以使用AsyncTask。但是使用Handler有没有简单的方法实现主线程与子线程的通信呢。Android已经为我们内置了这么一个类HandlerThread，顾名思义，这是一个线程类，可以让我们更方便地实现线程间通信，那么，下面我们就通过一个简单的例子来了解一下这个类的使用方法。</p>
+<h3 id="简单使用"><a href="#简单使用" class="headerlink" title="简单使用"></a>简单使用</h3><p>这里我们使用一个按钮来模拟手机收到服务器推送消息，收到推送消息后我们需要进行下载操作，这当然放在子线程中进行，子线程将下载进度传给主线程并且在下载完成后通知主线程进行安装操作。简单的逻辑，我们先来看看本章的主角HandlerThread的用法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">initThread</span><span class="params">()</span> </span>&#123; </span><br><span class="line">    <span class="comment">//初始化工作线程</span></span><br><span class="line">    workerThread = <span class="keyword">new</span> HandlerThread(<span class="string">&quot;down-load-thread&quot;</span>);</span><br><span class="line">    <span class="comment">//启动工作线程</span></span><br><span class="line">    workerThread.start();</span><br><span class="line">    <span class="comment">//初始化工作线程handler,传入Looper实现与工作线程的绑定</span></span><br><span class="line">    workerHandler = <span class="keyword">new</span> DownLoadHandler(workerThread.getLooper(),</span><br><span class="line">                                        <span class="keyword">new</span> WeakReference&lt;HandlerThreadDemoActivity&gt;(<span class="keyword">this</span>));</span><br><span class="line">    <span class="comment">//初始化主线程</span></span><br><span class="line">    mainHandler = <span class="keyword">new</span> MainHandler(<span class="keyword">new</span> WeakReference&lt;HandlerThreadDemoActivity&gt;(<span class="keyword">this</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到使用方法还是很简单的，我们需要先对HandlerThread进行初始化，并且启动这个线程，然后将该线程的Looper传给工作线程的消息处理器workerHandler，接下来我们初始化一个主线程的消息处理器mainHandler。初始化工作就完成了，接下来是点击按钮的操作：</p>
+        
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Android多线程通信/">Android多线程通信</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/articles/Android/MultiThread/AsyncTask/"><span>Android多线程-AsyncTask简单使用</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/MultiThread/AsyncTask/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-04-25T12:15:56.000Z">
+          2018-04-25
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>通过前几篇文章的学习，我们已经对Android多线程通信有了一定的了解。那么这篇文章我们来讲讲Android系统为我们内置的异步任务类AsyncTask。运用AsyncTask可以让我们只关注于子线程中的耗时操作和更新UI的操作，使用起来会比Handler要简单一些，当然，只是针对一些简单操作，比如网络操作，图片加载，数据获取等等。</p>
+<h3 id="简单介绍"><a href="#简单介绍" class="headerlink" title="简单介绍"></a>简单介绍</h3><p>首先AsyncTask是一个抽象类，一般我们使用它会定义一个它的子类并复写其方法来使用，先看类定义：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Params：启动任务传入参数</span></span><br><span class="line"><span class="comment"> * Progress：任务执行进度值</span></span><br><span class="line"><span class="comment"> * Result：异步任务完成返回值</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">AsyncTask</span>&lt;<span class="title">Params</span>, <span class="title">Progress</span>, <span class="title">Result</span>&gt; </span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们需要传入三个泛型，分别是参数、进度和返回值，其中最重要的几个方法有：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 主线程中执行，调用execute方法后立即执行</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@MainThread</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onPreExecute</span><span class="params">()</span> </span>&#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 工作线程中执行，会在执行完onPreExecute后执行方法</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> Params 接受参数</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> 返回结果，传递给onPostExecute</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@WorkerThread</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">abstract</span> Result <span class="title">doInBackground</span><span class="params">(Params... params)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 主线程执行，在手动调用publishProgress后被自动调用</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> values 异步任务进度</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@MainThread</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onProgressUpdate</span><span class="params">(Progress... values)</span> </span>&#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 主线程执行，工作任务完成后调用该方法</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> result 返回结果</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@MainThread</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onPostExecute</span><span class="params">(Result result)</span> </span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Android多线程通信/">Android多线程通信</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+
+<nav class="pagination">
+  
+  <a href="/" class="pagination-prev">上一页</a>
+  
+  
+  <a href="/page/3/" class="pagination-next">下一页</a>
+  
+</nav>
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2020 小米粒
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

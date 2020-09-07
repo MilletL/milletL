@@ -1,0 +1,175 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Android动画学习之Frame Animation | RiceEater的小小世界 | My Life&#39;s Getting Better.</title>
+
+  
+  <meta name="author" content="小米粒">
+  
+
+  
+  <meta name="description" content="上一节我们讲了补间动画，接下来我们来学习逐帧动画。
+Android中的逐帧动画是将一系列静止的画面按一定的顺序和速度进行播放从而产生的动画效果，当然静止的画面指的就是帧了，反映在我们的代码中就是一张张图片。ps：这里插一个小概念，我们玩游戏或者看电影时经常会讲到的一个词，帧数，其实指的就是1秒内播放的帧数量，用fps来表示画面传输率，一般电影播放为24帧，也就是一秒播放24个画面，游戏有30帧到60帧或者更高，更高的帧数表现为画面更加流畅，没有卡顿感。
+多说无益，代码才是王道，下面我们就来实现Android中的逐帧动画，依然是分为两种方式：
+xmlFrameAnimation的定义与TweenAnimation不同，它是定义在res/drawable目录下，用法如下：
+123456789&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;utf-8&amp;quot;?&amp;gt;&amp;lt;animation-list xmlns:android=&amp;quot;http://schemas.android.com/apk/res/android&amp;quot;    android:oneshot=&amp;quot;false&amp;quot;&amp;gt;    &amp;lt;item android:drawable=&amp;quot;@mipmap/anim_frame_1&amp;quot; android:duration=&amp;quot;42&amp;quot;/&amp;gt;    &amp;lt;item android:drawable=&amp;quot;@mipmap/anim_frame_2&amp;quot; android:duration=&amp;quot;42&amp;quot;/&amp;gt;    ...    &amp;lt;item android:drawable=&amp;quot;@mipmap/anim_frame_27&amp;quot; android:duration=&amp;quot;42&amp;quot;/&amp;gt;    &amp;lt;item android:drawable=&amp;quot;@mipmap/anim_frame_28&amp;quot; android:duration=&amp;quot;42&amp;quot;/&amp;gt;&amp;lt;/animation-list&amp;gt;
+
+可以看到，其实就是画面的堆叠，oneshot属性是指动画是否仅执行一次，设置为false则说明重复执行，设置为true则代表执行一次后停止。item属性很简单，只有两个，drawable设置该帧，duration设置该帧显示时长。那么这个xml的用法也很简单，可以将这个动画文件当做一个drawable来使用，设置给某个view作为背景，如下：">
+  
+
+  
+  <meta name="keywords" content="RiceEater 小米粒 riceeater.info">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="Android动画学习之Frame Animation"/>
+
+  <meta property="og:site_name" content="RiceEater的小小世界"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="RiceEater的小小世界" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+<meta name="generator" content="Hexo 5.1.1"></head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">RiceEater的小小世界</a>
+    </h1>
+    <p class="site-description">My Life&#39;s Getting Better.</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+        <li><a href="/plans">计划</a></li>
+      
+        <li><a href="/about">关于</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>Android动画学习之Frame Animation</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/Animation/frame-animation/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-04-18T11:45:54.000Z">
+          2018-04-18
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p><a href="/articles/Android-animation/Android-Animation-tween/">上一节</a>我们讲了补间动画，接下来我们来学习逐帧动画。</p>
+<p>Android中的逐帧动画是将一系列静止的画面按一定的顺序和速度进行播放从而产生的动画效果，当然静止的画面指的就是帧了，反映在我们的代码中就是一张张图片。ps：这里插一个小概念，我们玩游戏或者看电影时经常会讲到的一个词，帧数，其实指的就是1秒内播放的帧数量，用fps来表示画面传输率，一般电影播放为24帧，也就是一秒播放24个画面，游戏有30帧到60帧或者更高，更高的帧数表现为画面更加流畅，没有卡顿感。</p>
+<p>多说无益，代码才是王道，下面我们就来实现Android中的逐帧动画，依然是分为两种方式：</p>
+<h3 id="xml"><a href="#xml" class="headerlink" title="xml"></a>xml</h3><p>FrameAnimation的定义与TweenAnimation不同，它是定义在res/drawable目录下，用法如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">animation-list</span> <span class="attr">xmlns:android</span>=<span class="string">&quot;http://schemas.android.com/apk/res/android&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:oneshot</span>=<span class="string">&quot;false&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">&quot;@mipmap/anim_frame_1&quot;</span> <span class="attr">android:duration</span>=<span class="string">&quot;42&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">&quot;@mipmap/anim_frame_2&quot;</span> <span class="attr">android:duration</span>=<span class="string">&quot;42&quot;</span>/&gt;</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">&quot;@mipmap/anim_frame_27&quot;</span> <span class="attr">android:duration</span>=<span class="string">&quot;42&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">&quot;@mipmap/anim_frame_28&quot;</span> <span class="attr">android:duration</span>=<span class="string">&quot;42&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">animation-list</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看到，其实就是画面的堆叠，oneshot属性是指动画是否仅执行一次，设置为false则说明重复执行，设置为true则代表执行一次后停止。item属性很简单，只有两个，drawable设置该帧，duration设置该帧显示时长。那么这个xml的用法也很简单，可以将这个动画文件当做一个drawable来使用，设置给某个view作为背景，如下：</p>
+<a id="more"></a>
+
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">View</span></span></span><br><span class="line"><span class="tag">      <span class="attr">android:id</span>=<span class="string">&quot;@+id/view_anim_container&quot;</span></span></span><br><span class="line"><span class="tag">      <span class="attr">android:layout_margin</span>=<span class="string">&quot;10dp&quot;</span></span></span><br><span class="line"><span class="tag">      <span class="attr">android:layout_width</span>=<span class="string">&quot;wrap_content&quot;</span></span></span><br><span class="line"><span class="tag">      <span class="attr">android:layout_height</span>=<span class="string">&quot;wrap_content&quot;</span></span></span><br><span class="line"><span class="tag">      <span class="attr">android:background</span>=<span class="string">&quot;@drawable/anim_list_match_man&quot;</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>然后在Java代码中调用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    animContainer = findViewById(R.id.view_anim_container);</span><br><span class="line">    animationDrawable = (AnimationDrawable) animContainer.getBackground();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 开启动画</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">startAnim</span><span class="params">(View view)</span> </span>&#123;</span><br><span class="line">    animationDrawable.start();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 停止动画</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">stopAnim</span><span class="params">(View view)</span> </span>&#123;</span><br><span class="line">    animationDrawable.stop();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用很简单，取出Drawable，强转为AnimationDrawable(逐帧动画的帮助类)，该类常用的方法就是start()开启动画和stop()停止动画。使用方法很简单，不细说，接下来是纯java代码的实现：</p>
+<h3 id="Java"><a href="#Java" class="headerlink" title="Java"></a>Java</h3><p>纯java生成的方式也非常简单，直接撸代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">animationDrawable = <span class="keyword">new</span> AnimationDrawable();</span><br><span class="line">animationDrawable.addFrame(getResources().getDrawable(R.mipmap.anim_frame_28),<span class="number">42</span>);</span><br><span class="line">animationDrawable.addFrame(getResources().getDrawable(R.mipmap.anim_frame_27),<span class="number">42</span>);</span><br><span class="line">...</span><br><span class="line">animationDrawable.addFrame(getResources().getDrawable(R.mipmap.anim_frame_2),<span class="number">42</span>);</span><br><span class="line">animationDrawable.addFrame(getResources().getDrawable(R.mipmap.anim_frame_1),<span class="number">42</span>);</span><br><span class="line">animContainer.setBackgroundDrawable(animationDrawable);<span class="comment">//将动画设置给view</span></span><br></pre></td></tr></table></figure>
+
+<p>开启方法与上面的xml实现一样，不在多说</p>
+<p>实现效果就是下图这样子了，一个火柴人互殴的动画，原图太长了放不下，只截取了一点点：</p>
+<p><img src="https://riceeater.oss-cn-qingdao.aliyuncs.com/blog/%E5%8A%A8%E7%94%BB-Frame%E5%8A%A8%E7%94%BB.gif"></p>
+<p>可以看到java实现是把动画帧倒序排列实现了倒播的效果。</p>
+<p>ok，到这里我们的FrameAnimation就了解完了，比起Tween动画可简单太多了不是吗。代码地址在<a target="_blank" rel="noopener" href="https://github.com/riceeater/AndroidAnimationTest">github</a>，欢迎下载查看、拍砖~</p>
+<p>See you~</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Android动画/">Android动画</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+  
+
+
+
+
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2020 小米粒
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

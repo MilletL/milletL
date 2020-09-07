@@ -1,0 +1,272 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Android动画学习之属性动画(Property Animator)-2、属性动画执行流程 | RiceEater的小小世界 | My Life&#39;s Getting Better.</title>
+
+  
+  <meta name="author" content="小米粒">
+  
+
+  
+  <meta name="description" content="经过上一章的学习，我们已经学会了属性动画的基本使用，这一章里我们就来讲一讲属性动画的底层实现，详细讲解一下什么是TimeInterpolator，什么是TypeEvaluator，以及它们是如何产生作用来呈现我们所看到的动画的。
+Animator执行流程我们从一个简单的例子来演示动画过程中的执行过程：
+12345678910111213141516171819202122232425262728293031323334@Overrideprotected void onCreate(@Nullable Bundle savedInstanceState) &amp;#123;	animator = ValueAnimator.ofFloat(0,800);    animator.setDuration(2000);    animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() &amp;#123;    	@Override    	public void onAnimationUpdate(ValueAnimator animation) &amp;#123;    		ivContainer.setTranslationY((Float) animation.getAnimatedValue());    	&amp;#125;    &amp;#125;);	rgInterpolatorType.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() &amp;#123;    	@Override        public void onCheckedChanged(RadioGroup group, int checkedId) &amp;#123;            ivContainer.setTranslationY(0);        &amp;#125;    &amp;#125;);&amp;#125;protected void valueAnalysis(View view) &amp;#123;    log = new StringBuilder(&amp;quot;&amp;quot;);    switch (rgInterpolatorType.getCheckedRadioButtonId()) &amp;#123;        case R.id.rb_type_linear:            animator.setInterpolator(new LinearInterpolator());//线性插值器            break;        case R.id.rb_type_accelerate_decelerate:            animator.setInterpolator(new AccelerateDecelerateInterpolator());//先加速后减速            break;        case R.id.rb_type_bounce:            animator.setInterpolator(new BounceInterpolator());//弹跳            break;    &amp;#125;    animator.start();&amp;#125;
+
+程序执行效果是这样：">
+  
+
+  
+  <meta name="keywords" content="RiceEater 小米粒 riceeater.info">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="Android动画学习之属性动画(Property Animator)-2、属性动画执行流程"/>
+
+  <meta property="og:site_name" content="RiceEater的小小世界"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="RiceEater的小小世界" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+<meta name="generator" content="Hexo 5.1.1"></head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">RiceEater的小小世界</a>
+    </h1>
+    <p class="site-description">My Life&#39;s Getting Better.</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+        <li><a href="/plans">计划</a></li>
+      
+        <li><a href="/about">关于</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>Android动画学习之属性动画(Property Animator)-2、属性动画执行流程</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/Animation/Animator-2/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-04-20T12:03:39.000Z">
+          2018-04-20
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>经过上一章的学习，我们已经学会了属性动画的基本使用，这一章里我们就来讲一讲属性动画的底层实现，详细讲解一下什么是TimeInterpolator，什么是TypeEvaluator，以及它们是如何产生作用来呈现我们所看到的动画的。</p>
+<h3 id="Animator执行流程"><a href="#Animator执行流程" class="headerlink" title="Animator执行流程"></a>Animator执行流程</h3><p>我们从一个简单的例子来演示动画过程中的执行过程：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(<span class="meta">@Nullable</span> Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">	animator = ValueAnimator.ofFloat(<span class="number">0</span>,<span class="number">800</span>);</span><br><span class="line">    animator.setDuration(<span class="number">2000</span>);</span><br><span class="line">    animator.addUpdateListener(<span class="keyword">new</span> ValueAnimator.AnimatorUpdateListener() &#123;</span><br><span class="line">    	<span class="meta">@Override</span></span><br><span class="line">    	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onAnimationUpdate</span><span class="params">(ValueAnimator animation)</span> </span>&#123;</span><br><span class="line">    		ivContainer.setTranslationY((Float) animation.getAnimatedValue());</span><br><span class="line">    	&#125;</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">	rgInterpolatorType.setOnCheckedChangeListener(<span class="keyword">new</span> RadioGroup.OnCheckedChangeListener() &#123;</span><br><span class="line">    	<span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCheckedChanged</span><span class="params">(RadioGroup group, <span class="keyword">int</span> checkedId)</span> </span>&#123;</span><br><span class="line">            ivContainer.setTranslationY(<span class="number">0</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">valueAnalysis</span><span class="params">(View view)</span> </span>&#123;</span><br><span class="line">    log = <span class="keyword">new</span> StringBuilder(<span class="string">&quot;&quot;</span>);</span><br><span class="line">    <span class="keyword">switch</span> (rgInterpolatorType.getCheckedRadioButtonId()) &#123;</span><br><span class="line">        <span class="keyword">case</span> R.id.rb_type_linear:</span><br><span class="line">            animator.setInterpolator(<span class="keyword">new</span> LinearInterpolator());<span class="comment">//线性插值器</span></span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> R.id.rb_type_accelerate_decelerate:</span><br><span class="line">            animator.setInterpolator(<span class="keyword">new</span> AccelerateDecelerateInterpolator());<span class="comment">//先加速后减速</span></span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> R.id.rb_type_bounce:</span><br><span class="line">            animator.setInterpolator(<span class="keyword">new</span> BounceInterpolator());<span class="comment">//弹跳</span></span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    animator.start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>程序执行效果是这样：</p>
+<a id="more"></a>
+
+<p><img src="https://riceeater.oss-cn-qingdao.aliyuncs.com/blog/%E5%8A%A8%E7%94%BB-%E5%B1%9E%E6%80%A7%E5%8A%A8%E7%94%BB%E9%80%9F%E7%8E%87.gif"></p>
+<p>可以看到分别使用了三种不同的的Interpolator后，动画执行效果有了不同，LinearInterpolator为匀速执行，每个时间片段内变化值相同，AccelerateDecelerateInterpolator则是先加速再减速，最后一个则有一个回弹的效果，为什么会这样呢，我们点开LinearInterpolator和AccelerateDecelerateInterpolator，可以看到有两个有趣的方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">float</span> <span class="title">getInterpolation</span><span class="params">(<span class="keyword">float</span> input)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//LinearInterpolator</span></span><br><span class="line">    <span class="keyword">return</span> input;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">float</span> <span class="title">getInterpolation</span><span class="params">(<span class="keyword">float</span> input)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//AccelerateDecelerateInterpolator</span></span><br><span class="line">    <span class="keyword">return</span> (<span class="keyword">float</span>)(Math.cos((input + <span class="number">1</span>) * Math.PI) / <span class="number">2.0f</span>) + <span class="number">0.5f</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们这里直接讲结论了，此方法在属性动画的使用中是接收一个时间因子(当前动画执行时间/动画时长)，然后返回一个float值(0<del>1)，代表动画从开始到结束，然后返回值会被传入TypeEvaluator的<code>evaluate(float fraction, Object startValue, Object endValue)</code>方法中，充当第一个参数，然后根据开始值和结束值得出当前值(endValue - startValue)*fraction+startValue。这样也就不难理解AccelerateDecelerateInterpolator先加速后减速的原理了，看下余弦曲线π</del>2π的走势就可以很明了的知道了。BounceInterpolator由于我数学水平有限，就不献丑了，有兴趣的可以打开源码查看实现原理。</p>
+<p>至此，我们已经明白一个动画的执行流程是如何的了。动画开始执行时，会动态的计算时间因子timeFraction(当前动画执行时间/动画时长)，然后使用TimeInterpolator的getInterpolation方法得到一个合适的插值因子fraction，再由TypeEvaluator使用这个插值因子计算出当前的值(float、int、argb、object等)，然后调用AnimatorUpdateListener的onAnimationUpdate方法，就可以取到当前的值了。而ObjectAnimator则是使用了反射的手段自动为我们传入的taeget设置了名为propertyName的属性值(使用setter和getter方法)。</p>
+<p>最后列一些Animator中定义的方法，或者查看<a target="_blank" rel="noopener" href="https://developer.android.com/reference/android/animation/Animator.html">官方文档</a></p>
+<table>
+<thead>
+<tr>
+<th>Public methods</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>void</code></td>
+<td><code>addListener(Animator.AnimatorListener listener)</code>添加动画监听</td>
+</tr>
+<tr>
+<td><code>void</code></td>
+<td><code>addPauseListener(Animator.AnimatorPauseListener listener)</code>添加动画暂停监听</td>
+</tr>
+<tr>
+<td><code>void</code></td>
+<td><code>cancel()</code>取消动画</td>
+</tr>
+<tr>
+<td><code>Animator</code></td>
+<td><code>clone()</code>返回一个当前动画的拷贝</td>
+</tr>
+<tr>
+<td><code>void</code></td>
+<td><code>end()</code>结束动画</td>
+</tr>
+<tr>
+<td><code>abstract long</code></td>
+<td><code>getDuration()</code>获取动画持续时间</td>
+</tr>
+<tr>
+<td><code>TimeInterpolator</code></td>
+<td><code>getInterpolator()</code>获取当前动画的插值器</td>
+</tr>
+<tr>
+<td><code>ArrayList&lt;Animator.AnimatorListener&gt;</code></td>
+<td><code>getListeners()</code>获取当前监听器列表</td>
+</tr>
+<tr>
+<td><code>abstract long</code></td>
+<td><code>getStartDelay()</code>获取动画开始前延迟时间</td>
+</tr>
+<tr>
+<td><code>long</code></td>
+<td><code>getTotalDuration()</code>获取当前动画的总时间，包括重复时间和延迟时间等</td>
+</tr>
+<tr>
+<td><code>boolean</code></td>
+<td><code>isPaused()</code>返回动画是否暂停</td>
+</tr>
+<tr>
+<td><code>abstract boolean</code></td>
+<td><code>isRunning()</code>返回当前动画是否正在执行</td>
+</tr>
+<tr>
+<td><code>boolean</code></td>
+<td><code>isStarted()</code>返回当前动画是否开始执行</td>
+</tr>
+<tr>
+<td><code>void</code></td>
+<td><code>pause()</code>Pauses a running animation.</td>
+</tr>
+<tr>
+<td><code>void</code></td>
+<td><code>removeAllListeners()</code>移除所有监听器</td>
+</tr>
+<tr>
+<td><code>void</code></td>
+<td><code>removeListener(Animator.AnimatorListener listener)</code>移除指定监听器</td>
+</tr>
+<tr>
+<td><code>void</code></td>
+<td><code>removePauseListener(Animator.AnimatorPauseListener listener)</code>移除暂停监听</td>
+</tr>
+<tr>
+<td><code>void</code></td>
+<td><code>resume()</code>将暂停动画继续执行</td>
+</tr>
+<tr>
+<td><code>abstract Animator</code></td>
+<td><code>setDuration(long duration)</code>设置动画持续时间</td>
+</tr>
+<tr>
+<td><code>abstract void</code></td>
+<td><code>setInterpolator(TimeInterpolator value)</code>设置插值器</td>
+</tr>
+<tr>
+<td><code>abstract void</code></td>
+<td><code>setStartDelay(long startDelay)</code>设置动画开始前延迟</td>
+</tr>
+<tr>
+<td><code>void</code></td>
+<td><code>setTarget(Object target)</code>设置执行动画对象</td>
+</tr>
+<tr>
+<td><code>void</code></td>
+<td><code>setupEndValues()</code>设置动画结束值</td>
+</tr>
+<tr>
+<td><code>void</code></td>
+<td><code>setupStartValues()</code>设置动画开始值</td>
+</tr>
+<tr>
+<td><code>void</code></td>
+<td><code>start()</code>开始此动画</td>
+</tr>
+</tbody></table>
+<p>这篇就先这样，关于属性动画的底层执行逻辑，讲道理我理解的还不够，等以后知识储备能足以理解这一块的时候再回来重写吧。老规矩，代码地址：<a target="_blank" rel="noopener" href="https://github.com/riceeater/AndroidAnimationTest">github</a></p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Android动画/">Android动画</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+  
+
+
+
+
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2020 小米粒
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

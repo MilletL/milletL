@@ -1,0 +1,192 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Android多线程-IntentService的使用以及原理浅析 | RiceEater的小小世界 | My Life&#39;s Getting Better.</title>
+
+  
+  <meta name="author" content="小米粒">
+  
+
+  
+  <meta name="description" content="上一章我们学习了HandlerThread，这一章我们来认识一下Android多线程通信常用的最后一个类IntentService。顾名思义，IntentService是一个Service的子类，其本质还是一个服务，不过它与它的父类还是有一些区别的，下面我们就来详细讲一下。
+IntentService与Service的区别
+IntentService是Service的子类，同样需要在AndroidManifest文件中注册
+IntentService可以在其onHandleIntent方法中执行异步操作，Service若要执行异步操作需要开辟子线程
+IntentService不使用bindService的方式启动，因为使用bindService后其异步方法不会执行，且内部HandlerThread不会初始化
+IntentService不需要执行stop或者stopSelf方法来关闭，在异步任务执行完毕后，其内部会自动调用stopSelf
+IntentService是串行模式，放入IntentService中执行的任务会依次执行，全部执行完毕后销毁自身
+
+IntentService的简单使用IntentService的使用十分简单，分为下面几个步骤：">
+  
+
+  
+  <meta name="keywords" content="RiceEater 小米粒 riceeater.info">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="Android多线程-IntentService的使用以及原理浅析"/>
+
+  <meta property="og:site_name" content="RiceEater的小小世界"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="RiceEater的小小世界" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+<meta name="generator" content="Hexo 5.1.1"></head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">RiceEater的小小世界</a>
+    </h1>
+    <p class="site-description">My Life&#39;s Getting Better.</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+        <li><a href="/plans">计划</a></li>
+      
+        <li><a href="/about">关于</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>Android多线程-IntentService的使用以及原理浅析</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/MultiThread/IntentService/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-04-28T07:18:24.000Z">
+          2018-04-28
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>上一章我们学习了HandlerThread，这一章我们来认识一下Android多线程通信常用的最后一个类IntentService。顾名思义，IntentService是一个Service的子类，其本质还是一个服务，不过它与它的父类还是有一些区别的，下面我们就来详细讲一下。</p>
+<h3 id="IntentService与Service的区别"><a href="#IntentService与Service的区别" class="headerlink" title="IntentService与Service的区别"></a>IntentService与Service的区别</h3><ul>
+<li><em>IntentService是Service的子类，同样需要在AndroidManifest文件中注册</em></li>
+<li><em>IntentService可以在其onHandleIntent方法中执行异步操作，Service若要执行异步操作需要开辟子线程</em></li>
+<li><em>IntentService不使用bindService的方式启动，因为使用bindService后其异步方法不会执行，且内部HandlerThread不会初始化</em></li>
+<li><em>IntentService不需要执行stop或者stopSelf方法来关闭，在异步任务执行完毕后，其内部会自动调用stopSelf</em></li>
+<li><em>IntentService是串行模式，放入IntentService中执行的任务会依次执行，全部执行完毕后销毁自身</em></li>
+</ul>
+<h3 id="IntentService的简单使用"><a href="#IntentService的简单使用" class="headerlink" title="IntentService的简单使用"></a>IntentService的简单使用</h3><p>IntentService的使用十分简单，分为下面几个步骤：</p>
+<a id="more"></a>
+
+<ol>
+<li>新建子类继承IntentService，在AndroidManifest注册该Service， 复写onHandleIntent方法并在onHandleintent方法中进行异步操作</li>
+<li>一般在Activity中调用IntentService，与使用普通Service类似，不过不要使用绑定方式，而要使用startService启动，并在Intent中放入相应的数据</li>
+<li>使用Handler或者本地广播等手段将onHandleIntent异步执行结果传给主线程</li>
+<li>主线程获取到异步操作结果并对其进行处理和展示等等</li>
+</ol>
+<h3 id="代码示例"><a href="#代码示例" class="headerlink" title="代码示例"></a>代码示例</h3><p>新建IntentService子类，并复写onHandleIntent方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 工作线程执行，其原理还是Handler，详细细节见源码</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> intent</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@WorkerThread</span></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onHandleIntent</span><span class="params">(<span class="meta">@Nullable</span> Intent intent)</span> </span>&#123;</span><br><span class="line">    Bundle bundle = intent.getExtras();</span><br><span class="line">    String fileName = bundle.getString(<span class="string">&quot;file_name&quot;</span>);</span><br><span class="line">    Log.e(TAG,<span class="string">&quot;当前下载&quot;</span>+fileName+<span class="string">&quot;当前线程id&quot;</span>+Thread.currentThread().getId());</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        Thread.sleep(<span class="number">5000</span>);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">    Intent resultIntent = <span class="keyword">new</span> Intent(DOWNLOAD_FINISH);</span><br><span class="line">    resultIntent.putExtras(bundle);</span><br><span class="line">    LocalBroadcastManager.getInstance(<span class="keyword">this</span>).sendBroadcast(resultIntent);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Activity启动service</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//启动两次，但是顺序执行，第一个任务执行完毕才会执行第二个任务的操作</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(View view)</span> </span>&#123;</span><br><span class="line">    Intent intent = <span class="keyword">new</span> Intent(<span class="keyword">this</span>,DownLoadIntentService.class);</span><br><span class="line">    Bundle bundle = <span class="keyword">new</span> Bundle();</span><br><span class="line">    bundle.putString(<span class="string">&quot;file_name&quot;</span>,<span class="string">&quot;巴啦啦小魔仙.mp4&quot;</span>);</span><br><span class="line">    intent.putExtras(bundle);</span><br><span class="line">    startService(intent);</span><br><span class="line"></span><br><span class="line">    Intent intent2 = <span class="keyword">new</span> Intent(<span class="keyword">this</span>,DownLoadIntentService.class);</span><br><span class="line">    Bundle bundle2 = <span class="keyword">new</span> Bundle();</span><br><span class="line">    bundle2.putString(<span class="string">&quot;file_name&quot;</span>,<span class="string">&quot;金刚葫芦娃.mp4&quot;</span>);</span><br><span class="line">    intent2.putExtras(bundle2);</span><br><span class="line">    startService(intent2);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用本地广播传递给主线程</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Intent resultIntent = <span class="keyword">new</span> Intent(DOWNLOAD_FINISH);</span><br><span class="line">resultIntent.putExtras(bundle);</span><br><span class="line">LocalBroadcastManager.getInstance(<span class="keyword">this</span>).sendBroadcast(resultIntent);</span><br></pre></td></tr></table></figure>
+
+<p>Activity获取结果并进行相应处理</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">intentFilter = <span class="keyword">new</span> IntentFilter(DownLoadIntentService.DOWNLOAD_FINISH);</span><br><span class="line">receiver = <span class="keyword">new</span> DownLoadBroadcastReceiver();</span><br><span class="line">LocalBroadcastManager.getInstance(<span class="keyword">this</span>).registerReceiver(receiver,intentFilter);</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">DownLoadBroadcastReceiver</span> <span class="keyword">extends</span> <span class="title">BroadcastReceiver</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onReceive</span><span class="params">(Context context, Intent intent)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(TextUtils.equals(intent.getAction(),DownLoadIntentService.DOWNLOAD_FINISH)) &#123;</span><br><span class="line">            Bundle bundle = intent.getExtras();</span><br><span class="line">            String fileName = bundle.getString(<span class="string">&quot;file_name&quot;</span>);</span><br><span class="line">            String result = tvResult.getText().toString();</span><br><span class="line">            result += <span class="string">&quot;名为&quot;</span>+fileName+<span class="string">&quot;的文件下载完成！\r&quot;</span>;</span><br><span class="line">            tvResult.setText(result);</span><br><span class="line">            Toast.makeText(IntentServiceDemoActivity.<span class="keyword">this</span>,<span class="string">&quot;下载完成，当前下载文件名&quot;</span>+fileName,Toast.LENGTH_SHORT).show();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里我使用的本地广播进行消息的传递。</p>
+<h3 id="程序执行结果"><a href="#程序执行结果" class="headerlink" title="程序执行结果"></a>程序执行结果</h3><p><img src="https://riceeater.oss-cn-qingdao.aliyuncs.com/blog/%E5%A4%9A%E7%BA%BF%E7%A8%8B-IntentService%E6%A8%A1%E6%8B%9F%E4%B8%8B%E8%BD%BD.gif"></p>
+<h3 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h3><p>我们打开IntentService 的源码来分析其实现原理。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">IntentService</span> <span class="keyword">extends</span> <span class="title">Service</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">volatile</span> Looper mServiceLooper;<span class="comment">//子线程绑定的Looper</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">volatile</span> ServiceHandler mServiceHandler;<span class="comment">//HandlerThread实例</span></span><br><span class="line">    <span class="keyword">private</span> String mName;<span class="comment">//传入的参数，默认缺省</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> mRedelivery;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/** 绑定工作线程Handler，handleMessage运行于子线程中 **/</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">ServiceHandler</span> <span class="keyword">extends</span> <span class="title">Handler</span> </span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">ServiceHandler</span><span class="params">(Looper looper)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">super</span>(looper);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;</span><br><span class="line">            <span class="comment">//会在处理完成后自动关闭</span></span><br><span class="line">            onHandleIntent((Intent)msg.obj);</span><br><span class="line">            stopSelf(msg.arg1);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">IntentService</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>();</span><br><span class="line">        mName = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setIntentRedelivery</span><span class="params">(<span class="keyword">boolean</span> enabled)</span> </span>&#123;</span><br><span class="line">        mRedelivery = enabled;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate();</span><br><span class="line">        <span class="comment">//生成一个HandlerThread实例并启动这个线程</span></span><br><span class="line">        HandlerThread thread = <span class="keyword">new</span> HandlerThread(<span class="string">&quot;IntentService[&quot;</span> + mName + <span class="string">&quot;]&quot;</span>);</span><br><span class="line">        thread.start();</span><br><span class="line">        <span class="comment">//将HandlerThread中的Looper与该Service 绑定，并新建子线程Handler</span></span><br><span class="line">        mServiceLooper = thread.getLooper();</span><br><span class="line">        mServiceHandler = <span class="keyword">new</span> ServiceHandler(mServiceLooper);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//调用startService后调用onStartCommand并转到该方法中</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onStart</span><span class="params">(<span class="meta">@Nullable</span> Intent intent, <span class="keyword">int</span> startId)</span> </span>&#123;</span><br><span class="line">        Message msg = mServiceHandler.obtainMessage();</span><br><span class="line">        msg.arg1 = startId;</span><br><span class="line">        msg.obj = intent;</span><br><span class="line">        mServiceHandler.sendMessage(msg);</span><br><span class="line">        <span class="comment">//发出消息，arg1带上自身ID，使其完成时关闭自身</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//如果系统在服务完成之前关闭Service，START_NOT_STICKY型服务会直接被关闭，而		START_REDELIVER_INTENT 型服务会在可用资源不再吃紧的时候尝试再次启动服务。</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">onStartCommand</span><span class="params">(<span class="meta">@Nullable</span> Intent intent, <span class="keyword">int</span> flags, <span class="keyword">int</span> startId)</span> </span>&#123;</span><br><span class="line">        onStart(intent, startId);</span><br><span class="line">        <span class="keyword">return</span> mRedelivery ? START_REDELIVER_INTENT : START_NOT_STICKY;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onDestroy</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">//Looper退出循环</span></span><br><span class="line">        mServiceLooper.quit();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="meta">@Nullable</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> IBinder <span class="title">onBind</span><span class="params">(Intent intent)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//默认返回null</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/** 子线程中运行，在Handler的handleMessage中调用此方法 **/</span></span><br><span class="line">    <span class="meta">@WorkerThread</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">onHandleIntent</span><span class="params">(<span class="meta">@Nullable</span> Intent intent)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到将注释删除后也就只有短短100行。具体的分析可以体现为：</p>
+<p>调用startService() -&gt; onCreate()被调用，绑定一个HandlerThread到当前Service，并生成一个子线程Handler -&gt; onStartCommand()被调用 -&gt; 最终调用onStart(@Nullable Intent intent, int startId) 方法并发送消息给消息循环 -&gt; 其余就是Handler的处理消息过程，最终调用onHandleIntent并在执行完毕后调用stopSelf关闭自身。</p>
+<p>这章的内容就是这样，如果文章内容出现错误或者偏差，希望您能联系我，我会尽快进行更改。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/riceeater/AndroidMultiThreadTest">demo地址</a></p>
+<p>感谢阅读~</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Android多线程通信/">Android多线程通信</a><a href="/tags/Service/">Service</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+  
+
+
+
+
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2020 小米粒
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

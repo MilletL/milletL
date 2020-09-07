@@ -1,0 +1,201 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Android动画学习之属性动画(Property Animator)-1、基础用法 | RiceEater的小小世界 | My Life&#39;s Getting Better.</title>
+
+  
+  <meta name="author" content="小米粒">
+  
+
+  
+  <meta name="description" content="经过前两章的学习，终于到了我们使用最多的属性动画了。属性动画是Android3.0(API 11)中引入的新的动画机制，相较于补间动画，它除了可以实现补间动画的所有效果外，还能实现补间动画无法做到的效果，比如我们现在要求一张图片背景色渐变，补间动画就无法完成，而使用属性动画就可以很简单的实现这个效果。另外补间动画只能作用在View上，而不能作用于非View的对象上，比如我们自定义一个View，此View的位置我们由Ponit类(包含x、y轴坐标信息)，我们要求使用动画改变View的位置，就需要使用动画操作point对象，那么就只能使用属性动画来完成。对于补间动画来说，我们之前就已经讲过了，动画只会改变View的绘制位置而不会改变其真正属性，所以像触摸事件不会跟随动画移动，就会出现view平移后点击事件仍然留在原地的尴尬事情，而我们要介绍的属性动画就没有这个问题，因为是直接操作的View的属性，因此在其移动后，相应的事件也会随之移动。
+属性动画中我们使用较多的两个类，一个是ValueAnimator，另一个是ObjectAnimator，其中后者继承前者，并且封装了许多常用操作，因此比前者更加易用。ValueAnimator的父类则是Animator,Animator还有一个常用子类是AnimatorSet(动画集合)，这个我们也会在后面介绍。
+ok，讲了这么多废话，都不如代码直观，下面我们就来讲解ValueAnimator、ObjectAnimator以及AnimatorSet的简单使用：">
+  
+
+  
+  <meta name="keywords" content="RiceEater 小米粒 riceeater.info">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="Android动画学习之属性动画(Property Animator)-1、基础用法"/>
+
+  <meta property="og:site_name" content="RiceEater的小小世界"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="RiceEater的小小世界" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+<meta name="generator" content="Hexo 5.1.1"></head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">RiceEater的小小世界</a>
+    </h1>
+    <p class="site-description">My Life&#39;s Getting Better.</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+        <li><a href="/plans">计划</a></li>
+      
+        <li><a href="/about">关于</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>Android动画学习之属性动画(Property Animator)-1、基础用法</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/Animation/Animator-1/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-04-19T11:56:00.000Z">
+          2018-04-19
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>经过前两章的学习，终于到了我们使用最多的属性动画了。属性动画是Android3.0(API 11)中引入的新的动画机制，相较于补间动画，它除了可以实现补间动画的所有效果外，还能实现补间动画无法做到的效果，比如我们现在要求一张图片背景色渐变，补间动画就无法完成，而使用属性动画就可以很简单的实现这个效果。另外补间动画只能作用在View上，而不能作用于非View的对象上，比如我们自定义一个View，此View的位置我们由Ponit类(包含x、y轴坐标信息)，我们要求使用动画改变View的位置，就需要使用动画操作point对象，那么就只能使用属性动画来完成。对于补间动画来说，我们之前就已经讲过了，动画只会改变View的绘制位置而不会改变其真正属性，所以像触摸事件不会跟随动画移动，就会出现view平移后点击事件仍然留在原地的尴尬事情，而我们要介绍的属性动画就没有这个问题，因为是直接操作的View的属性，因此在其移动后，相应的事件也会随之移动。</p>
+<p>属性动画中我们使用较多的两个类，一个是ValueAnimator，另一个是ObjectAnimator，其中后者继承前者，并且封装了许多常用操作，因此比前者更加易用。ValueAnimator的父类则是Animator,Animator还有一个常用子类是AnimatorSet(动画集合)，这个我们也会在后面介绍。</p>
+<p>ok，讲了这么多废话，都不如代码直观，下面我们就来讲解ValueAnimator、ObjectAnimator以及AnimatorSet的简单使用：</p>
+<a id="more"></a>
+
+<h3 id="ValueAnimator"><a href="#ValueAnimator" class="headerlink" title="ValueAnimator"></a>ValueAnimator</h3><p>先上用法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">alphaValueAnimator = ValueAnimator.ofFloat(<span class="number">1.0f</span>,<span class="number">0f</span>);</span><br><span class="line">alphaValueAnimator.setDuration(<span class="number">1000</span>);</span><br><span class="line">alphaValueAnimator.setRepeatCount(<span class="number">1</span>);</span><br><span class="line">alphaValueAnimator.setRepeatMode(ValueAnimator.REVERSE);</span><br><span class="line">alphaValueAnimator.addUpdateListener(<span class="keyword">new</span> ValueAnimator.AnimatorUpdateListener() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onAnimationUpdate</span><span class="params">(ValueAnimator animation)</span> </span>&#123;</span><br><span class="line">    ivContainer.setAlpha((<span class="keyword">float</span>)animation.getAnimatedValue());</span><br><span class="line">    &#125;</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure>
+
+<p>我们这里写了一个渐隐渐现的动画，动画透明度从1变到0，再从0变到1，然后结束。可以看到使用方法里和补间动画有很多相似的地方，例如设置动画时间(setDuration)、设置重复次数(setRepeatCount)、设置重复模式(setRepeatMode)等等。其中ValueAnimator的of…方法中，前者是动画初始值，后者是动画结束值，你也可以传多个参数，例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ValueAnimator.ofFloat(<span class="number">1.0f</span>,<span class="number">0.5f</span>,<span class="number">1f</span>,<span class="number">0f</span>);</span><br></pre></td></tr></table></figure>
+
+<p>就带便透明度从1变化为0.5再变化为1再变化为0的动画。</p>
+<p>ValueAnimator支持的其他常用方法还有ofInt()、ofArgb()、ofObject()、ofPropertyValueHolder()，前两个方法使用和ofFloat大致类似，后两个方法我们留在后面在分析属性动画执行流程时会进行讲解。</p>
+<p>需要注意的是addUpdateListenr方法，这个方法为动画执行加了坚听，我们可以在onAnimationUpdate方法中对我们要执行动画的对象进行更改。如果想观察动画执行过程的，可以在onAnimationUpdate方法中打印animation.getAnimatedValue的值查看变化过程，可以对ValueAnimator加深理解，我在这里就不再演示。如果我们用到了其他效果，可以相应在onAnimationUpdate方法中写下对应逻辑。用法比较简单，不多说。</p>
+<h3 id="ObjectAnimator"><a href="#ObjectAnimator" class="headerlink" title="ObjectAnimator"></a>ObjectAnimator</h3><p>ObjectAnimator的使用就比上面的要简单的多，写法是这样的:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">float</span> translationX = ivContainer.getTranslationX();</span><br><span class="line">translateObjectAnimator = ObjectAnimator.ofFloat(ivContainer,<span class="string">&quot;translationY&quot;</span>,translationX,translationX-<span class="number">200</span>);</span><br><span class="line">translateObjectAnimator.setRepeatCount(<span class="number">1</span>);</span><br><span class="line">translateObjectAnimator.setRepeatMode(ValueAnimator.REVERSE);</span><br><span class="line">translateObjectAnimator.setDuration(<span class="number">1000</span>);</span><br></pre></td></tr></table></figure>
+
+<p>上面的效果是将ImageView向上平移200像素再平移回原位置(如果不设置repeatCount则平移后会留在原位置，这里为了方便演示设置了1个重复次数并且设置重复方式为反转)。可以看出ObjectAnimator的使用要比他的父类简单许多，ofFloat方法中，第一个参数Target接受一个Object对象，这是动画执行的对象，第二个参数propertyName是动画执行过程选中要改变的对象中的值，注意这个属性名在响应的对象里必须有setter和getter方法，其余参数则是动画执行的初始值和结束值，其余与ValueAnimator类似。</p>
+<p>我们在对view添加动画的时候，可以使用的PropertyName都有哪些，常用的有“translationY”、”rotation”、”tranlationX”、”alpha”、”scale”等等。</p>
+<p>使用ObjectAnimator我们就不必再添加动画监听来设置给目标对象，在调用start()方法后内部会自动进行调用，后续我们会进行详细的分析。</p>
+<h3 id="AnimatorSet-动画集合"><a href="#AnimatorSet-动画集合" class="headerlink" title="AnimatorSet(动画集合)"></a>AnimatorSet(动画集合)</h3><p>AnimatorSet也是继承于Animator，主要用于组合动画如同时播放两个动画，或者之后播放，提前播放动画、延迟播放等等，主要用到的方法有：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">play(Animator anim)    <span class="comment">//播放当前动画</span></span><br><span class="line">after(Animator anim)   <span class="comment">//将该动画插入原动画之前</span></span><br><span class="line">after(<span class="keyword">long</span> delay)    <span class="comment">//将动画延迟相应毫秒</span></span><br><span class="line">before(Animator anim)   <span class="comment">//将该动画放入原动画</span></span><br><span class="line">with(Animator anim)    <span class="comment">//将该动画与原动画同时播放</span></span><br></pre></td></tr></table></figure>
+
+<p>上述方法返回的都是Animator.Builder对象，有了这些方法，我们对view进行组合操作如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">animatorValueSet = <span class="keyword">new</span> AnimatorSet();</span><br><span class="line">animatorValueSet.play(alphaValueAnimator)</span><br><span class="line">    .with(rotateValueAnimator)</span><br><span class="line">    .before(scaleValueAnimator)</span><br><span class="line">    .after(translateValueAnimator);</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，该动画会先执行translateValueAnimator，然后同时执行alphaValueAnimator和rotateValueAnimator，最后执行scaleValueAnimator。</p>
+<p>下面是分别使用ValueAnimator和ObjectAnimator来使用集合动画（其实没什么卵区别）:</p>
+<h3 id="监听动画开始与结束"><a href="#监听动画开始与结束" class="headerlink" title="监听动画开始与结束"></a>监听动画开始与结束</h3><p>有时我们会有在动画结束或开始时执行某些方法的需求，这时候需要我们对动画进行监听。上面我们已经用过了监听动画状态更新的监听器，另外还有addListener和addPauseListener，分别监听动画的开始结束等状态和停止状态。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">animatorObjectSet.addListener(<span class="keyword">new</span> Animator.AnimatorListener() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onAnimationStart</span><span class="params">(Animator animation)</span> </span>&#123;</span><br><span class="line">                <span class="comment">//动画开始时调用</span></span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onAnimationEnd</span><span class="params">(Animator animation)</span> </span>&#123;</span><br><span class="line">                <span class="comment">//动画结束时调用</span></span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onAnimationCancel</span><span class="params">(Animator animation)</span> </span>&#123;</span><br><span class="line">                <span class="comment">//动画取消时调用</span></span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onAnimationRepeat</span><span class="params">(Animator animation)</span> </span>&#123;</span><br><span class="line">                <span class="comment">//动画重复执行时调用</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br></pre></td></tr></table></figure>
+
+<p>我们可以在几个方法中来进行逻辑操作，有时候我们并不想监听这么多状态，那么就可以使用AnimatorListenerAdapter这个抽象类，该类实现了AnimatorListener和AnimatorPauseListener，我们可以按照自己需要来复写相应方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">animatorObjectSet.addListener(<span class="keyword">new</span> AnimatorListenerAdapter() &#123;</span><br><span class="line">        &#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="xml编写属性动画"><a href="#xml编写属性动画" class="headerlink" title="xml编写属性动画"></a>xml编写属性动画</h3><p>我们知道，补间动画可以有两种形式来实现，一种是xml形式，另一种是代码形式。属性动画我们刚刚讲了代码的实现形式，那么它可不可以写进xml中呢，答案是肯定的。</p>
+<p>属性动画所在的目录是res/animator下，如果res下没有animator，可以新建该目录，新建xml文件，其中我们可以使用的根节点有这么三个：</p>
+<ul>
+<li>&lt;animator&gt;    相当于代码中的ValueAnimator</li>
+<li>&lt;objectAnimator&gt;    相当于ObjectAnimator</li>
+<li>&lt;set&gt;    相当于AnimatorSet</li>
+</ul>
+<p>我这里实现的效果是这样的：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">set</span> <span class="attr">xmlns:android</span>=<span class="string">&quot;http://schemas.android.com/apk/res/android&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:ordering</span>=<span class="string">&quot;sequentially&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">objectAnimator</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:duration</span>=<span class="string">&quot;1000&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:repeatCount</span>=<span class="string">&quot;1&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:valueType</span>=<span class="string">&quot;floatType&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:valueFrom</span>=<span class="string">&quot;0&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:valueTo</span>=<span class="string">&quot;-200&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:repeatMode</span>=<span class="string">&quot;reverse&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:propertyName</span>=<span class="string">&quot;translationY&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">set</span> <span class="attr">android:ordering</span>=<span class="string">&quot;together&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">objectAnimator</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:duration</span>=<span class="string">&quot;1000&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:repeatCount</span>=<span class="string">&quot;1&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:valueType</span>=<span class="string">&quot;floatType&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:valueFrom</span>=<span class="string">&quot;1.0&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:valueTo</span>=<span class="string">&quot;0&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:repeatMode</span>=<span class="string">&quot;reverse&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:propertyName</span>=<span class="string">&quot;alpha&quot;</span>/&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">objectAnimator</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:duration</span>=<span class="string">&quot;1000&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:repeatCount</span>=<span class="string">&quot;1&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:valueType</span>=<span class="string">&quot;floatType&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:valueFrom</span>=<span class="string">&quot;0&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:valueTo</span>=<span class="string">&quot;-180&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:repeatMode</span>=<span class="string">&quot;reverse&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:propertyName</span>=<span class="string">&quot;rotation&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">set</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">objectAnimator</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:duration</span>=<span class="string">&quot;1000&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:repeatCount</span>=<span class="string">&quot;1&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:valueType</span>=<span class="string">&quot;floatType&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:valueFrom</span>=<span class="string">&quot;1&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:valueTo</span>=<span class="string">&quot;1.5&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:repeatMode</span>=<span class="string">&quot;reverse&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:propertyName</span>=<span class="string">&quot;scaleY&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">set</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>实现的效果和Java代码一样，需要注意set的属性ordering，together为同时执行，sequentially为顺序执行。</p>
+<p>在程序中调用这个动画的方法是：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * xml实现动画</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">xmlAnimatorTest</span> <span class="params">(View view)</span> </span>&#123;</span><br><span class="line">    Animator animator = AnimatorInflater.loadAnimator(<span class="keyword">this</span>,R.animator.animator_test);</span><br><span class="line">    animator.setTarget(ivContainer);</span><br><span class="line">    animator.start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>实现的效果如图所示：</p>
+<p><img src="https://riceeater.oss-cn-qingdao.aliyuncs.com/blog/%E5%8A%A8%E7%94%BB-%E5%B1%9E%E6%80%A7%E5%8A%A8%E7%94%BB.gif"></p>
+</br>
+
+<p>ok，到这里属性动画的基本用法就讲完了，接下来将会介绍Animator的底层实现和一些高级用法以及酷炫的动画特效，代码地址依然是：<a target="_blank" rel="noopener" href="https://github.com/riceeater/AndroidAnimationTest">github</a>，欢迎查看。</p>
+<p>enjoy~</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Android动画/">Android动画</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+  
+
+
+
+
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2020 小米粒
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

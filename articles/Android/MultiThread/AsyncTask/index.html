@@ -1,0 +1,180 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Android多线程-AsyncTask简单使用 | RiceEater的小小世界 | My Life&#39;s Getting Better.</title>
+
+  
+  <meta name="author" content="小米粒">
+  
+
+  
+  <meta name="description" content="通过前几篇文章的学习，我们已经对Android多线程通信有了一定的了解。那么这篇文章我们来讲讲Android系统为我们内置的异步任务类AsyncTask。运用AsyncTask可以让我们只关注于子线程中的耗时操作和更新UI的操作，使用起来会比Handler要简单一些，当然，只是针对一些简单操作，比如网络操作，图片加载，数据获取等等。
+简单介绍首先AsyncTask是一个抽象类，一般我们使用它会定义一个它的子类并复写其方法来使用，先看类定义：
+1234567/** * Params：启动任务传入参数 * Progress：任务执行进度值 * Result：异步任务完成返回值 */public abstract class AsyncTask&amp;lt;Params, Progress, Result&amp;gt; &amp;#123;&amp;#125;
+
+我们需要传入三个泛型，分别是参数、进度和返回值，其中最重要的几个方法有：
+123456789101112131415161718192021222324252627282930/** * 主线程中执行，调用execute方法后立即执行 */@MainThreadprotected void onPreExecute() &amp;#123;&amp;#125;/** * 工作线程中执行，会在执行完onPreExecute后执行方法 * @param Params 接受参数 * @return 返回结果，传递给onPostExecute */@WorkerThreadprotected abstract Result doInBackground(Params... params);/** * 主线程执行，在手动调用publishProgress后被自动调用 * @param values 异步任务进度 */@MainThreadprotected void onProgressUpdate(Progress... values) &amp;#123;&amp;#125;/** * 主线程执行，工作任务完成后调用该方法 * @param result 返回结果 */@MainThreadprotected void onPostExecute(Result result) &amp;#123;&amp;#125;">
+  
+
+  
+  <meta name="keywords" content="RiceEater 小米粒 riceeater.info">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="Android多线程-AsyncTask简单使用"/>
+
+  <meta property="og:site_name" content="RiceEater的小小世界"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="RiceEater的小小世界" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+<meta name="generator" content="Hexo 5.1.1"></head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">RiceEater的小小世界</a>
+    </h1>
+    <p class="site-description">My Life&#39;s Getting Better.</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+        <li><a href="/plans">计划</a></li>
+      
+        <li><a href="/about">关于</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>Android多线程-AsyncTask简单使用</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/MultiThread/AsyncTask/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-04-25T12:15:56.000Z">
+          2018-04-25
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>通过前几篇文章的学习，我们已经对Android多线程通信有了一定的了解。那么这篇文章我们来讲讲Android系统为我们内置的异步任务类AsyncTask。运用AsyncTask可以让我们只关注于子线程中的耗时操作和更新UI的操作，使用起来会比Handler要简单一些，当然，只是针对一些简单操作，比如网络操作，图片加载，数据获取等等。</p>
+<h3 id="简单介绍"><a href="#简单介绍" class="headerlink" title="简单介绍"></a>简单介绍</h3><p>首先AsyncTask是一个抽象类，一般我们使用它会定义一个它的子类并复写其方法来使用，先看类定义：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Params：启动任务传入参数</span></span><br><span class="line"><span class="comment"> * Progress：任务执行进度值</span></span><br><span class="line"><span class="comment"> * Result：异步任务完成返回值</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">AsyncTask</span>&lt;<span class="title">Params</span>, <span class="title">Progress</span>, <span class="title">Result</span>&gt; </span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们需要传入三个泛型，分别是参数、进度和返回值，其中最重要的几个方法有：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 主线程中执行，调用execute方法后立即执行</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@MainThread</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onPreExecute</span><span class="params">()</span> </span>&#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 工作线程中执行，会在执行完onPreExecute后执行方法</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> Params 接受参数</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> 返回结果，传递给onPostExecute</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@WorkerThread</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">abstract</span> Result <span class="title">doInBackground</span><span class="params">(Params... params)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 主线程执行，在手动调用publishProgress后被自动调用</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> values 异步任务进度</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@MainThread</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onProgressUpdate</span><span class="params">(Progress... values)</span> </span>&#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 主线程执行，工作任务完成后调用该方法</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> result 返回结果</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@MainThread</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onPostExecute</span><span class="params">(Result result)</span> </span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+
+<p>执行顺序是这样的，异步任务调用<code>execute</code>方法后，会立即在UI线程中执行<code>onPreExecute</code>方法，一般我们会在这里面进行一些初始化操作，紧接着会在开启的子线程中调用<code>doInBackground</code>方法进行耗时操作，在耗时操作中如果手动调用了<code>publishProgress</code>方法，系统会自动调用<code>onProgressUpdate</code>方法更新进度，在异步任务执行完毕后，在UI线程调用并将<code>doInBackground</code>的返回值作为参数传递给<code>onPostExecute</code>方法，至此，异步任务完成。</p>
+<h3 id="使用实例"><a href="#使用实例" class="headerlink" title="使用实例"></a>使用实例</h3><p>下面我们就用一个实际的例子来演示AsyncTask的使用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DownloadImageTask</span> <span class="keyword">extends</span> <span class="title">AsyncTask</span>&lt;<span class="title">String</span>,<span class="title">Void</span>,<span class="title">Bitmap</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * 主线程中执行，调用execute方法后立即执行</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onPreExecute</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>.onPreExecute();</span><br><span class="line">    pbLoading.setVisibility(View.VISIBLE);</span><br><span class="line">    ivContainer.setImageBitmap(<span class="keyword">null</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">  * 工作线程中执行，会在执行完onPreExecute后执行方法</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> strings 接受参数</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@return</span> 返回结果，传递给onPostExecute</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">protected</span> Bitmap <span class="title">doInBackground</span><span class="params">(String... strings)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//下载图片，返回bitmap对象</span></span><br><span class="line">    String url = strings[<span class="number">0</span>];</span><br><span class="line">    URLConnection connection;</span><br><span class="line">    InputStream inputStream;</span><br><span class="line">    Bitmap result = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      connection = <span class="keyword">new</span> URL(url).openConnection();</span><br><span class="line">      inputStream = connection.getInputStream();</span><br><span class="line">      BufferedInputStream bis = <span class="keyword">new</span> BufferedInputStream(inputStream);</span><br><span class="line">      result = BitmapFactory.decodeStream(bis);</span><br><span class="line">      bis.close();</span><br><span class="line">      inputStream.close();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">      e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">  * 主线程执行，在手动调用publishProgress后被自动调用</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> values 异步任务进度</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onProgressUpdate</span><span class="params">(Void... values)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>.onProgressUpdate(values);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">  * 主线程执行，工作任务完成后调用该方法</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> bitmap 返回结果</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onPostExecute</span><span class="params">(Bitmap bitmap)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>.onPostExecute(bitmap);</span><br><span class="line">    pbLoading.setVisibility(View.GONE);</span><br><span class="line">    ivContainer.setImageBitmap(bitmap);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>很简单的一个下载图片的异步任务，调用方法也很简单：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">loadImage</span><span class="params">(View view)</span> </span>&#123;</span><br><span class="line">  asyncTask = <span class="keyword">new</span> DownloadImageTask();</span><br><span class="line">  asyncTask.execute(IMAGE_URL);<span class="comment">//可以接受多个参数</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里千万要留意使用AsyncTask时定义类型不要直接写AsyncTask，直接用其子类的类型，不然会由于泛型的问题导致ClassCastException，我当年在这儿被坑过，运行效果是这样的：</p>
+<p><img src="https://riceeater.oss-cn-qingdao.aliyuncs.com/blog/%E5%A4%9A%E7%BA%BF%E7%A8%8B-%E6%A8%A1%E6%8B%9F%E4%B8%8B%E8%BD%BD%E5%9B%BE%E7%89%87.gif"></p>
+<p>总结一下<strong>AsyncTask的注意事项</strong>：</p>
+<ul>
+<li><p>AsyncTask只能在主线程中初始化和执行</p>
+</li>
+<li><p>AsyncTask的四个重要方法都不由程序员调用，且除了<code>doInBackground</code>执行于子线程以外，其他都在主线程中执行</p>
+</li>
+<li><p>取消AsyncTask的方法是，调用<code>cancle()</code>方法，并在异步任务执行过程中使用<code>isCanceled</code>判断，若为false，则终止任务</p>
+</li>
+<li><p>AsyncTask内部线程池默认使用同步线程池，即一个任务完成后执行下一个任务，若要使用异步线程池，使用<code>asynct.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, 0);</code></p>
+</li>
+</ul>
+<p>最后还是<a target="_blank" rel="noopener" href="https://github.com/riceeater/AndroidMultiThreadTest">github地址</a>~</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Android多线程通信/">Android多线程通信</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+  
+
+
+
+
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2020 小米粒
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,185 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Android View相关-View的常用方法及使用区别 | RiceEater的小小世界 | My Life&#39;s Getting Better.</title>
+
+  
+  <meta name="author" content="小米粒">
+  
+
+  
+  <meta name="description" content="经过上一章的摸索，我们已经了解了Android中View的绘制流程分别是measure、layout和draw，那么对Android有一些了解的话，一定知道View中有这样几个方法invalidate、postInvalidate以及requestLayout，我们知道这些方法调用后会触发View的重绘(不一定正确的说法)，那么它们的用法是什么，有什么区别以及使用时候有哪些注意事项，这就是我们这一篇文章力求弄明白的东西，好了，废话不多说，开始今天的分析。
+invalidate我们从View源码中追本溯源，可以看到在View中方法的调用情况是这样的：
+1234567891011121314151617181920212223242526272829303132333435/** * 使当前View失效，若View是可见的那么onDraw方法会在未来的某个时间点被调用 * 该方法必须在UI线程被调用，若需要在非UI线程调用，调用postInvalidate */public void invalidate() &amp;#123;    invalidate(true);&amp;#125;/** * 这个方法是invalidate整整产生作用的地方，一个invalidate请求会将绘制缓存设为失效 * 不过这个方式可以设置参数为false来禁止绘制缓存失效 */void invalidate(boolean invalidateCache) &amp;#123;    invalidateInternal(0, 0, mRight - mLeft, mBottom - mTop, invalidateCache, true);&amp;#125;void invalidateInternal(int l, int t, int r, int b, boolean invalidateCache,                        boolean fullInvalidate) &amp;#123;    ...    if ((mPrivateFlags &amp;amp; (PFLAG_DRAWN | PFLAG_HAS_BOUNDS)) == (PFLAG_DRAWN | PFLAG_HAS_BOUNDS)        || (invalidateCache &amp;amp;&amp;amp; (mPrivateFlags &amp;amp; PFLAG_DRAWING_CACHE_VALID) == PFLAG_DRAWING_CACHE_VALID)        || (mPrivateFlags &amp;amp; PFLAG_INVALIDATED) != PFLAG_INVALIDATED        || (fullInvalidate &amp;amp;&amp;amp; isOpaque() != mLastIsOpaque)) &amp;#123;        // Propagate the damage rectangle to the parent view.        final AttachInfo ai = mAttachInfo;        final ViewParent p = mParent;        if (p != null &amp;amp;&amp;amp; ai != null &amp;amp;&amp;amp; l &amp;lt; r &amp;amp;&amp;amp; t &amp;lt; b) &amp;#123;            final Rect damage = ai.mTmpInvalRect;            //刷新区域            damage.set(l, t, r, b);            //调用父控件的invalidateChild方法            p.invalidateChild(this, damage);        &amp;#125;        ...    &amp;#125;&amp;#125;">
+  
+
+  
+  <meta name="keywords" content="RiceEater 小米粒 riceeater.info">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="Android View相关-View的常用方法及使用区别"/>
+
+  <meta property="og:site_name" content="RiceEater的小小世界"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="RiceEater的小小世界" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+<meta name="generator" content="Hexo 5.1.1"></head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">RiceEater的小小世界</a>
+    </h1>
+    <p class="site-description">My Life&#39;s Getting Better.</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+        <li><a href="/plans">计划</a></li>
+      
+        <li><a href="/about">关于</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>Android View相关-View的常用方法及使用区别</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/View/CommonMethod/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-05-01T12:20:25.000Z">
+          2018-05-01
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>经过上一章的摸索，我们已经了解了Android中View的绘制流程分别是measure、layout和draw，那么对Android有一些了解的话，一定知道View中有这样几个方法invalidate、postInvalidate以及requestLayout，我们知道这些方法调用后会触发View的重绘(不一定正确的说法)，那么它们的用法是什么，有什么区别以及使用时候有哪些注意事项，这就是我们这一篇文章力求弄明白的东西，好了，废话不多说，开始今天的分析。</p>
+<h3 id="invalidate"><a href="#invalidate" class="headerlink" title="invalidate"></a>invalidate</h3><p>我们从View源码中追本溯源，可以看到在View中方法的调用情况是这样的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 使当前View失效，若View是可见的那么onDraw方法会在未来的某个时间点被调用</span></span><br><span class="line"><span class="comment"> * 该方法必须在UI线程被调用，若需要在非UI线程调用，调用postInvalidate</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">invalidate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    invalidate(<span class="keyword">true</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 这个方法是invalidate整整产生作用的地方，一个invalidate请求会将绘制缓存设为失效</span></span><br><span class="line"><span class="comment"> * 不过这个方式可以设置参数为false来禁止绘制缓存失效</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">invalidate</span><span class="params">(<span class="keyword">boolean</span> invalidateCache)</span> </span>&#123;</span><br><span class="line">    invalidateInternal(<span class="number">0</span>, <span class="number">0</span>, mRight - mLeft, mBottom - mTop, invalidateCache, <span class="keyword">true</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">invalidateInternal</span><span class="params">(<span class="keyword">int</span> l, <span class="keyword">int</span> t, <span class="keyword">int</span> r, <span class="keyword">int</span> b, <span class="keyword">boolean</span> invalidateCache,</span></span></span><br><span class="line"><span class="function"><span class="params">                        <span class="keyword">boolean</span> fullInvalidate)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">if</span> ((mPrivateFlags &amp; (PFLAG_DRAWN | PFLAG_HAS_BOUNDS)) == (PFLAG_DRAWN | PFLAG_HAS_BOUNDS)</span><br><span class="line">        || (invalidateCache &amp;&amp; (mPrivateFlags &amp; PFLAG_DRAWING_CACHE_VALID) == PFLAG_DRAWING_CACHE_VALID)</span><br><span class="line">        || (mPrivateFlags &amp; PFLAG_INVALIDATED) != PFLAG_INVALIDATED</span><br><span class="line">        || (fullInvalidate &amp;&amp; isOpaque() != mLastIsOpaque)) &#123;</span><br><span class="line">        <span class="comment">// Propagate the damage rectangle to the parent view.</span></span><br><span class="line">        <span class="keyword">final</span> AttachInfo ai = mAttachInfo;</span><br><span class="line">        <span class="keyword">final</span> ViewParent p = mParent;</span><br><span class="line">        <span class="keyword">if</span> (p != <span class="keyword">null</span> &amp;&amp; ai != <span class="keyword">null</span> &amp;&amp; l &lt; r &amp;&amp; t &lt; b) &#123;</span><br><span class="line">            <span class="keyword">final</span> Rect damage = ai.mTmpInvalRect;</span><br><span class="line">            <span class="comment">//刷新区域</span></span><br><span class="line">            damage.set(l, t, r, b);</span><br><span class="line">            <span class="comment">//调用父控件的invalidateChild方法</span></span><br><span class="line">            p.invalidateChild(<span class="keyword">this</span>, damage);</span><br><span class="line">        &#125;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+
+<p>从这里可以看出invalidate方法的作用是令当前View的绘制缓存失效，并且会调用onDraw方法，不过我们并没有在上述代码中看到onDraw(注意invalidate方法只能在UI线程中调用，工作线程调用该方法会报错)，我们知道该方法最终调用了父控件的invalidateChild方法，那么我们来查看下ViewGroup中的invalidateChild：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 不要主动调用该方法</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">invalidateChild</span><span class="params">(View child, <span class="keyword">final</span> Rect dirty)</span> </span>&#123;</span><br><span class="line">    ViewParent parent = <span class="keyword">this</span>;</span><br><span class="line">    ...</span><br><span class="line">        <span class="keyword">do</span> &#123;</span><br><span class="line">            ...</span><br><span class="line">            <span class="keyword">if</span> (view != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> ((view.mViewFlags &amp; FADING_EDGE_MASK) != <span class="number">0</span> &amp;&amp;</span><br><span class="line">                    view.getSolidColor() == <span class="number">0</span>) &#123;</span><br><span class="line">                    opaqueFlag = PFLAG_DIRTY;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> ((view.mPrivateFlags &amp; PFLAG_DIRTY_MASK) != PFLAG_DIRTY) &#123;</span><br><span class="line">                    view.mPrivateFlags = (view.mPrivateFlags &amp; ~PFLAG_DIRTY_MASK) | opaqueFlag;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            parent = parent.invalidateChildInParent(location, dirty);</span><br><span class="line">        &#125; <span class="keyword">while</span> (parent != <span class="keyword">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>该方法执行了一段循环代码，这里层层调用父控件的invalidateChildInParent方法，知道返回值为空，我们知道绘制的起点是在ViewRootImpl中，那么打开ViewRootImpl，查看其invalidateChildInParent代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> ViewParent <span class="title">invalidateChildInParent</span><span class="params">(<span class="keyword">int</span>[] location, Rect dirty)</span> </span>&#123;</span><br><span class="line">    invalidateRectOnScreen(dirty);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">invalidateRectOnScreen</span><span class="params">(Rect dirty)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!mWillDrawSoon &amp;&amp; (intersected || mIsAnimating)) &#123;</span><br><span class="line">        scheduleTraversals();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里在返回null之后上述循环终止，我们注意到在循环终止前ViewRootImpl调用了scheduleTraversals方法，这个方法跟我们之前讲过的performTraversals方法很像，我们来看看里面有什么：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">scheduleTraversals</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!mTraversalScheduled) &#123;</span><br><span class="line">        mTraversalScheduled = <span class="keyword">true</span>;</span><br><span class="line">        mTraversalBarrier = mHandler.getLooper().getQueue().postSyncBarrier();</span><br><span class="line">        <span class="comment">//这行代码在Choreographer类内部使用Handler机制最终调用了doTraversal方法</span></span><br><span class="line">        mChoreographer.postCallback(</span><br><span class="line">            Choreographer.CALLBACK_TRAVERSAL, mTraversalRunnable, <span class="keyword">null</span>);</span><br><span class="line">        <span class="keyword">if</span> (!mUnbufferedInputDispatch) &#123;</span><br><span class="line">            scheduleConsumeBatchedInput();</span><br><span class="line">        &#125;</span><br><span class="line">        notifyRendererOfFramePending();</span><br><span class="line">        pokeDrawLockIfNeeded();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">doTraversal</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (mTraversalScheduled) &#123;</span><br><span class="line">        mTraversalScheduled = <span class="keyword">false</span>;</span><br><span class="line">        mHandler.getLooper().getQueue().removeSyncBarrier(mTraversalBarrier);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (mProfile) &#123;</span><br><span class="line">            Debug.startMethodTracing(<span class="string">&quot;ViewAncestor&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">		<span class="comment">//调用此方法判断是否需要重新测量放置以及绘制</span></span><br><span class="line">        performTraversals();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (mProfile) &#123;</span><br><span class="line">            Debug.stopMethodTracing();</span><br><span class="line">            mProfile = <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到在绕了一圈之后，ViewRootImpl最终会调用我们上篇讲到的performTraversals方法，重复判断流程。至此，View的invalidate方法执行流程完毕。</p>
+<h3 id="postInvalidate"><a href="#postInvalidate" class="headerlink" title="postInvalidate"></a>postInvalidate</h3><p>我们在前面的注释里可以看出，invalidate方法是不可以在非UI线程执行的，而postInvalidate则可以，结合我们之前学习的Handler知识，我们猜想可能是使用了handler机制，最终仍然是调用了invalidate，那我们来源码中验证一下我们的猜想：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">postInvalidate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    postInvalidateDelayed(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">postInvalidateDelayed</span><span class="params">(<span class="keyword">long</span> delayMilliseconds)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// We try only with the AttachInfo because there&#x27;s no point in invalidating</span></span><br><span class="line">    <span class="comment">// if we are not attached to our window</span></span><br><span class="line">    <span class="keyword">final</span> AttachInfo attachInfo = mAttachInfo;</span><br><span class="line">    <span class="keyword">if</span> (attachInfo != <span class="keyword">null</span>) &#123;</span><br><span class="line">        attachInfo.mViewRootImpl.dispatchInvalidateDelayed(<span class="keyword">this</span>, delayMilliseconds);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">dispatchInvalidateDelayed</span><span class="params">(View view, <span class="keyword">long</span> delayMilliseconds)</span> </span>&#123;</span><br><span class="line">    Message msg = mHandler.obtainMessage(MSG_INVALIDATE, view);</span><br><span class="line">    mHandler.sendMessageDelayed(msg, delayMilliseconds);</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">switch</span> (msg.what) &#123;</span><br><span class="line">        <span class="keyword">case</span> MSG_INVALIDATE:</span><br><span class="line">            ((View) msg.obj).invalidate();</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，跟我们猜想的一样，经过一系列列调用，最后使用Handler机制，调用了invalidate方法，也就是说这两个方法区别基本只在线程之间。</p>
+<h3 id="requestLayout"><a href="#requestLayout" class="headerlink" title="requestLayout"></a>requestLayout</h3><p>requestLayout也是我么View中一个很重要的方法，我们在之前讲绘制流程的时候也有看到这个方法，那么我们来探究一下它究竟做了什么：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">requestLayout</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	...</span><br><span class="line">    <span class="keyword">if</span> (mParent != <span class="keyword">null</span> &amp;&amp; !mParent.isLayoutRequested()) &#123;</span><br><span class="line">        mParent.requestLayout();</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这方法与之前invalidateInternal方法类似，也是一层层调用父控件的requestLayout方法，直到ViewRootImpl(ViewGroup没有复写该方法，这里不再关注)：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">requestLayout</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!mHandlingLayoutInLayoutRequest) &#123;</span><br><span class="line">        checkThread();</span><br><span class="line">        mLayoutRequested = <span class="keyword">true</span>;</span><br><span class="line">        scheduleTraversals();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>又看到了熟悉的scheduleTraversals方法，这里跟之前invalidate的区别仅仅只是标志位可能有所改变，后续流程一致。</p>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>一般引起invalidate调用的情景如下：</p>
+<ul>
+<li><strong>调用invalidate()方法，请求重新draw()，但只会绘制调用者本身。</strong></li>
+<li><strong>调用setSelection()方法 ：请求重新draw()，但只会绘制调用者本身。</strong></li>
+<li><strong>调用setVisibility()方法 ：  当View可视状态在INVISIBLE转换VISIBLE时会间接调用invalidate方法，继而绘制该View。当View的可视状态在INVISIBLE\VISIBLE 转换为GONE状态时会间接调用requestLayout和invalidate方法，同时由于View树大小发生了变化，所以会请求measure过程以及draw过程，同样只绘制需要“重新绘制”的视图。</strong></li>
+<li><strong>调用setEnabled()方法 ： 请求重新draw()，但不会重新绘制任何视图包括该调用者本身。</strong></li>
+<li><strong>调用requestFocus方法。请求View树的draw过程，只绘制“需要重绘”的View。</strong></li>
+<li><strong>invalidate方法只能在UI线程调用，而postInvalidate可以在工作线程调用，不过invalidate效率更高(显然)</strong></li>
+<li><strong>requestLayout()方法会调用measure过程和layout过程，不会调用draw过程，也不会重新绘制任何View包括该调用者本身</strong></li>
+</ul>
+<p>好了，这就是本篇的全部内容了，这里还是偏理论的东西较多，掌握脉络即可。下一篇文章我们会来聊一聊Android中的事件分发机制，敬请期待~</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/面试基础/">面试基础</a><a href="/tags/View绘制流程/">View绘制流程</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+  
+
+
+
+
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2020 小米粒
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

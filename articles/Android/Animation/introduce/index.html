@@ -1,0 +1,156 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Android动画学习之概论 | RiceEater的小小世界 | My Life&#39;s Getting Better.</title>
+
+  
+  <meta name="author" content="小米粒">
+  
+
+  
+  <meta name="description" content="Android动画-初识​    在Android开发过程中，动画(Animation)占到了极大地比重。动画效果的加入可以使我们的应用程序更友好，更美观。我们知道Android应用程序可以实现及其精致和复杂的动画效果，那么这些动画效果是如何做出来的呢？在Android FrameWork提供了大量的API来支持实现复杂多变的动画效果，若对Android中的动画进行分类，大体可以分为View Animation和Property Animation，其中View Animation又分为Tween Animation和Frame Animation。因此我们讲Android动画一般会说有Tween Animation(补间动画)、Frame Animation(帧动画)、Property Animation(属性动画)，这三者的区别如下:
+Tween Animation(补间动画)
+​    Tween Animation是Android早期版本推出的动画，主要可以实现四种效果（缩放、平移、渐变、旋转），也可以通过AnimationSet来实现动画的组合排序。不过补间动画只适用于view，局限性比较大，而且不能改变view的真实属性。对于初学者来说，不能改变view真实属性可能难以理解，举个例子来讲，一个ImageView使用tween动画进行平移操作，从屏幕左侧移动到屏幕右侧，视觉上View发生了移动，但是如果你对ImageView进行点击，你会发现执行动画后的位置点击并不会其效果，这是因为动画并没有改变ImageView的真实位置，而是将其绘制在了屏幕右侧，该ImageVIew的作用区域并没有发生改变，点击事件还是会在原位置响应！">
+  
+
+  
+  <meta name="keywords" content="RiceEater 小米粒 riceeater.info">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="Android动画学习之概论"/>
+
+  <meta property="og:site_name" content="RiceEater的小小世界"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="RiceEater的小小世界" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+<meta name="generator" content="Hexo 5.1.1"></head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">RiceEater的小小世界</a>
+    </h1>
+    <p class="site-description">My Life&#39;s Getting Better.</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+        <li><a href="/plans">计划</a></li>
+      
+        <li><a href="/about">关于</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>Android动画学习之概论</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/Animation/introduce/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-04-16T11:50:10.000Z">
+          2018-04-16
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <h3 id="Android动画-初识"><a href="#Android动画-初识" class="headerlink" title="Android动画-初识"></a>Android动画-初识</h3><p>​    在Android开发过程中，动画(Animation)占到了极大地比重。动画效果的加入可以使我们的应用程序更友好，更美观。我们知道Android应用程序可以实现及其精致和复杂的动画效果，那么这些动画效果是如何做出来的呢？在Android FrameWork提供了大量的API来支持实现复杂多变的动画效果，若对Android中的动画进行分类，大体可以分为View Animation和Property Animation，其中View Animation又分为Tween Animation和Frame Animation。因此我们讲Android动画一般会说有Tween Animation(补间动画)、Frame Animation(帧动画)、Property Animation(属性动画)，这三者的区别如下:</p>
+<p><strong>Tween Animation(补间动画)</strong></p>
+<p>​    Tween Animation是Android早期版本推出的动画，主要可以实现四种效果（缩放、平移、渐变、旋转），也可以通过AnimationSet来实现动画的组合排序。不过补间动画只适用于view，局限性比较大，而且不能改变view的真实属性。对于初学者来说，不能改变view真实属性可能难以理解，举个例子来讲，一个ImageView使用tween动画进行平移操作，从屏幕左侧移动到屏幕右侧，视觉上View发生了移动，但是如果你对ImageView进行点击，你会发现执行动画后的位置点击并不会其效果，这是因为动画并没有改变ImageView的真实位置，而是将其绘制在了屏幕右侧，该ImageVIew的作用区域并没有发生改变，点击事件还是会在原位置响应！</p>
+<a id="more"></a>
+
+<p><strong>Frame Animation(帧动画)</strong></p>
+<p>​    相比之下，帧动画就简单了许多，它的原理是将准备好的一系列图片以顺序播放，借助人体视觉残留的效果形成动画，类似于我们小时候快速翻书的动画。</p>
+<p><strong>Property Animation(属性动画)</strong></p>
+<p>​    属性动画是如今使用最多，也是效果最为强大的动画效果，同时它也是Android官方所推荐使用的动画。Android3.0(API 11)后引入了属性动画，它比View Animation更为强大，灵活，属性动画可以实现补间动画的所有效果，而且可以不仅仅作用于view，其作用对象可以是任意Object。属性动画顾名思义，可以改变对象的属性，这也是它与补间动画的一大不同。</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Android动画/">Android动画</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+  
+
+
+
+
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2020 小米粒
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

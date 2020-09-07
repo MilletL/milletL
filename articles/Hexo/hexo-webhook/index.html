@@ -1,0 +1,174 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>利用webHook实现hexo自动更新 | RiceEater的小小世界 | My Life&#39;s Getting Better.</title>
+
+  
+  <meta name="author" content="小米粒">
+  
+
+  
+  <meta name="description" content="上篇文章中我们提到了利用github webhook来实现hexo博客的自动更新，现在我们就来实现这个功能。（ps:安装了宝塔面板的用户可以很方便的实现此功能，以下的所有实现基于你的VPS上安装了宝塔面板）
+安装宝塔WebHook登录你的宝塔面板，选中软件管理，在第二页找到宝塔WebHook 1.0，点击安装，过程大概需要几分钟，取决于你的VPS配置，耐心等待安装完毕。
+配置宝塔WebHook安装完成后，点击宝塔WebHook 1.0右侧设置按钮，点击添加，新建Hook。
+名称可以随意起一个，执行脚本如下：
+12$ cd /www/wwwroot/blog$ git pull
+
+很简单，进入你的VPS下的博客目录，执行pull操作将代码更新到VPS上
+点击保存，完成hook的新增。
+这是可以看到我们新增的hook已经出现在列表里了，点击查看密钥可以看到hook的使用方法，这里就不在赘述">
+  
+
+  
+  <meta name="keywords" content="RiceEater 小米粒 riceeater.info">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="利用webHook实现hexo自动更新"/>
+
+  <meta property="og:site_name" content="RiceEater的小小世界"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="RiceEater的小小世界" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+<meta name="generator" content="Hexo 5.1.1"></head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">RiceEater的小小世界</a>
+    </h1>
+    <p class="site-description">My Life&#39;s Getting Better.</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+        <li><a href="/plans">计划</a></li>
+      
+        <li><a href="/about">关于</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>利用webHook实现hexo自动更新</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Hexo/hexo-webhook/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-10-10T12:56:22.000Z">
+          2018-10-10
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p><a href="/articles/Hexo/hexo-build/">上篇文章</a>中我们提到了利用github webhook来实现hexo博客的自动更新，现在我们就来实现这个功能。（ps:安装了宝塔面板的用户可以很方便的实现此功能，以下的所有实现基于你的VPS上安装了<a href="www.bt.cn">宝塔面板</a>）</p>
+<h3 id="安装宝塔WebHook"><a href="#安装宝塔WebHook" class="headerlink" title="安装宝塔WebHook"></a>安装宝塔WebHook</h3><p>登录你的宝塔面板，选中软件管理，在第二页找到宝塔WebHook 1.0，点击安装，过程大概需要几分钟，取决于你的VPS配置，耐心等待安装完毕。</p>
+<h3 id="配置宝塔WebHook"><a href="#配置宝塔WebHook" class="headerlink" title="配置宝塔WebHook"></a>配置宝塔WebHook</h3><p>安装完成后，点击宝塔WebHook 1.0右侧设置按钮，点击添加，新建Hook。</p>
+<p>名称可以随意起一个，执行脚本如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> /www/wwwroot/blog</span><br><span class="line">$ git pull</span><br></pre></td></tr></table></figure>
+
+<p>很简单，进入你的VPS下的博客目录，执行pull操作将代码更新到VPS上</p>
+<p>点击保存，完成hook的新增。</p>
+<p>这是可以看到我们新增的hook已经出现在列表里了，点击查看密钥可以看到hook的使用方法，这里就不在赘述</p>
+<a id="more"></a>
+
+<h3 id="github设置Webhook回调地址"><a href="#github设置Webhook回调地址" class="headerlink" title="github设置Webhook回调地址"></a>github设置Webhook回调地址</h3><p>登录打开你的github项目地址，点击setting，选中左侧的Webhooks，点击add webhook，在Payload URL一栏中写入类似这样的链接\http://面板/hook?access_key=123&amp;param=aaa，将面板替换为你的宝塔面板登录地址，access_key的值就是刚刚生成的hook密钥。后面的param是自定义参数，这里我们用不到，就不讲。</p>
+<p>点击add webHook按钮就完成了github上的设置。</p>
+</br>
+
+<p>现在我们就完成了webHook自动更新Hexo的所有操作。</p>
+<p>这样我们在写博客时在运行了</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo d</span><br></pre></td></tr></table></figure>
+
+<p>的命令后，代码会自动同步到VPS，你可以立即访问域名看到更改。</p>
+<p>enjoy~</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/教程/">教程</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/hexo/">hexo</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+  
+
+
+
+
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2020 小米粒
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

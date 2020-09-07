@@ -1,0 +1,153 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Android面试基础-WebView | RiceEater的小小世界 | My Life&#39;s Getting Better.</title>
+
+  
+  <meta name="author" content="小米粒">
+  
+
+  
+  <meta name="description" content="WebView常见的坑爹问题Android API 16及之前版本WebView存在远程代码执行安全漏洞，该漏洞是由于程序未正确限制使用WebView.addJavascriptInterface方法，导致远程攻击者可以通过使用Java反射机制利用该漏洞执行任意java对象的方法
+WebView在布">
+  
+
+  
+  <meta name="keywords" content="RiceEater 小米粒 riceeater.info">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="Android面试基础-WebView"/>
+
+  <meta property="og:site_name" content="RiceEater的小小世界"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="RiceEater的小小世界" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+<meta name="generator" content="Hexo 5.1.1"></head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">RiceEater的小小世界</a>
+    </h1>
+    <p class="site-description">My Life&#39;s Getting Better.</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+        <li><a href="/plans">计划</a></li>
+      
+        <li><a href="/about">关于</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>Android面试基础-WebView</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/Base/WebView/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-04-15T11:40:40.000Z">
+          2018-04-15
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <h3 id="WebView常见的坑爹问题"><a href="#WebView常见的坑爹问题" class="headerlink" title="WebView常见的坑爹问题"></a>WebView常见的坑爹问题</h3><p>Android API 16及之前版本WebView存在远程代码执行安全漏洞，该漏洞是由于程序未正确限制使用WebView.addJavascriptInterface方法，导致远程攻击者可以通过使用Java反射机制利用该漏洞执行任意java对象的方法</p>
+<p>WebView在布局中使用:webView写在其他容器中时，要先removeView在去destroy，不然会造成内存泄漏问题</p>
+<p>jsBridge桥接</p>
+<p>webViewClient.onPageFinished -&gt; WebChromeClient.onProgressChanged</p>
+<p>webView会单独开启线程，若未正确关闭，则会造成耗电问题</p>
+<p>WebView硬件加速会导致页面渲染问题，闪烁现象</p>
+<h3 id="关于内存泄漏问题"><a href="#关于内存泄漏问题" class="headerlink" title="关于内存泄漏问题"></a>关于内存泄漏问题</h3><p>动态添加WebView，对传入的WebView所使用的Context使用弱引用，动态添加WebView就是在布局中创建ViewGroup用来放置WebView，Activity创建后AddView来添加WebView，在Activity销毁时remove掉</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/WebView/">WebView</a><a href="/tags/面试基础/">面试基础</a><a href="/tags/Android四大组件/">Android四大组件</a><a href="/tags/内存泄漏/">内存泄漏</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+  
+
+
+
+
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2020 小米粒
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

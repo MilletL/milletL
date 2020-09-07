@@ -1,0 +1,195 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Android View相关-事件分发机制流程 | RiceEater的小小世界 | My Life&#39;s Getting Better.</title>
+
+  
+  <meta name="author" content="小米粒">
+  
+
+  
+  <meta name="description" content="经过前两篇的学习，相信已经对事件分发的一个流程产生了一定的理解(才怪)，那么这一章我们来看看整个事件分发从Activity到被消费的过程。好了，脑袋放空，我们开始。
+
+Activity中的View结构我们在这里先插一嘴Activity中的View结构。在开发过程中，我们通常使用setContentView来设置Activity的视图，Android中可见页面都是附着于窗口也就是Window上的，而DecorView是Window的最顶层视图。在Android Framework层，与窗口处理有关的类，主要是Window类和其实现类PhoneWindow，DecorView则是PhoneWindow的内部类，继承了FrameLayout。">
+  
+
+  
+  <meta name="keywords" content="RiceEater 小米粒 riceeater.info">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="Android View相关-事件分发机制流程"/>
+
+  <meta property="og:site_name" content="RiceEater的小小世界"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="RiceEater的小小世界" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+<meta name="generator" content="Hexo 5.1.1"></head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">RiceEater的小小世界</a>
+    </h1>
+    <p class="site-description">My Life&#39;s Getting Better.</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+        <li><a href="/plans">计划</a></li>
+      
+        <li><a href="/about">关于</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>Android View相关-事件分发机制流程</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/View/EventDispatch-3/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-05-06T08:45:08.000Z">
+          2018-05-06
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>经过前两篇的学习，相信已经对事件分发的一个流程产生了一定的理解(才怪)，那么这一章我们来看看整个事件分发从Activity到被消费的过程。好了，脑袋放空，我们开始。</p>
+<p><img src="http://p6z0jdp7l.bkt.clouddn.com/joke/v2-57afdd0ec7d9578d4579dba2d2848407_hd.jpg"></p>
+<h3 id="Activity中的View结构"><a href="#Activity中的View结构" class="headerlink" title="Activity中的View结构"></a>Activity中的View结构</h3><p>我们在这里先插一嘴Activity中的View结构。在开发过程中，我们通常使用setContentView来设置Activity的视图，Android中可见页面都是附着于窗口也就是Window上的，而DecorView是Window的最顶层视图。在Android Framework层，与窗口处理有关的类，主要是Window类和其实现类PhoneWindow，DecorView则是PhoneWindow的内部类，继承了FrameLayout。</p>
+<a id="more"></a>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//PhoneWindow.java</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PhoneWindow</span> <span class="keyword">extends</span> <span class="title">Window</span> <span class="keyword">implements</span> <span class="title">MenuBuilder</span>.<span class="title">Callback</span> </span>&#123;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">DecorView</span> <span class="keyword">extends</span> <span class="title">FrameLayout</span> <span class="keyword">implements</span> <span class="title">RootViewSurfaceTaker</span> </span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>而我们调用setContentView的本质是将View添加至DecorView，可以看到Activity源码中：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setContentView</span><span class="params">(<span class="meta">@LayoutRes</span> <span class="keyword">int</span> layoutResID)</span> </span>&#123;</span><br><span class="line">    getWindow().setContentView(layoutResID);</span><br><span class="line">    initWindowDecorActionBar();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>最终是调用了Window的setContentView，我们知道Window的实现类是PhoneWindow，来看下PhoneWindow中的实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setContentView</span><span class="params">(<span class="keyword">int</span> layoutResID)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (mContentParent == <span class="keyword">null</span>) &#123;</span><br><span class="line">        installDecor();</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (!hasFeature(FEATURE_CONTENT_TRANSITIONS)) &#123;</span><br><span class="line">        mContentParent.removeAllViews();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (hasFeature(FEATURE_CONTENT_TRANSITIONS)) &#123;</span><br><span class="line">        <span class="keyword">final</span> Scene newScene = Scene.getSceneForLayout(mContentParent, layoutResID,getContext());</span><br><span class="line">        transitionTo(newScene);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        mLayoutInflater.inflate(layoutResID, mContentParent);</span><br><span class="line">    &#125;</span><br><span class="line">    mContentParent.requestApplyInsets();</span><br><span class="line">    <span class="keyword">final</span> Callback cb = getCallback();</span><br><span class="line">    <span class="keyword">if</span> (cb != <span class="keyword">null</span> &amp;&amp; !isDestroyed()) &#123;</span><br><span class="line">        cb.onContentChanged();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到在12行，将Activity的View添加到DecorView中(mContentParent是DecorView的一个子View，具体可以查看PhoneWindow的generateLayout方法)。我们可以将添加页面至窗口的流程做一个总结：</p>
+<p><img src="http://p6z0jdp7l.bkt.clouddn.com/view/setcontentView.png"></p>
+<p>那么Activity视图被添加到Window的过程我们已经搞明白了，当然这跟本章内容弄并没有太大关系</p>
+<center>![](http://p6z0jdp7l.bkt.clouddn.com/joke/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20180428165454.jpg)![](http://p6z0jdp7l.bkt.clouddn.com/joke/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20180428165555.jpg)</center>
+
+<p>不过多学一点东西还是有必要的，那么我们开始今天的主题，事件分发的总流程。</p>
+<h3 id="事件分发流程"><a href="#事件分发流程" class="headerlink" title="事件分发流程"></a>事件分发流程</h3><p>我们知道，事件分发最初是到达Activity，然后依次下发，大致上：</p>
+<p>Activity ——&gt; PhoneWindow ——&gt; DecorView——&gt; ViewGroup ——&gt; … ——&gt; View</p>
+<p>是这样一个流程，由于我们无法操作PhoneWindow以及DecorView，下面我们就来分析一下Activity、ViewGroup、View这三者的的流程，我们先来分析这三者与事件分发有关的方法：</p>
+<ul>
+<li><strong>Activity:dispatchTouchEvent()、onTouchEvent()</strong></li>
+<li><strong>ViewGroup:dispatchTouchEvent()、onInterceptTouchEvent()、onTouchEvent()</strong></li>
+<li><strong>View:dispatchTouchEvent()、onTouchEvent()</strong></li>
+</ul>
+<p>我们知道Activity中管理视图的根View是DecorView，我们先从DecorView来看：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//DecorView</span></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">dispatchTouchEvent</span><span class="params">(MotionEvent ev)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> Callback cb = getCallback();</span><br><span class="line">    <span class="keyword">return</span> cb != <span class="keyword">null</span> &amp;&amp; !isDestroyed() &amp;&amp; mFeatureId &lt; <span class="number">0</span> ? cb.dispatchTouchEvent(ev)</span><br><span class="line">        : <span class="keyword">super</span>.dispatchTouchEvent(ev);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//Window</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> Callback <span class="title">getCallback</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> mCallback;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p> DecorView首先对mCallback进行了判断，如果mCallback不为空那么调用mCallback的dispatchTouchEvent，我们来看看mCallback是怎么进行赋值的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Window</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setCallback</span><span class="params">(Callback callback)</span> </span>&#123;</span><br><span class="line">	mCallback = callback;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//Activity</span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">attach</span><span class="params">(Context context, ActivityThread aThread,</span></span></span><br><span class="line"><span class="function"><span class="params">                  Instrumentation instr, IBinder token, <span class="keyword">int</span> ident,</span></span></span><br><span class="line"><span class="function"><span class="params">                  Application application, Intent intent, ActivityInfo info,</span></span></span><br><span class="line"><span class="function"><span class="params">                  CharSequence title, Activity parent, String id,</span></span></span><br><span class="line"><span class="function"><span class="params">                  NonConfigurationInstances lastNonConfigurationInstances,</span></span></span><br><span class="line"><span class="function"><span class="params">                  Configuration config, String referrer, IVoiceInteractor voiceInteractor)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">        mWindow = <span class="keyword">new</span> PhoneWindow(<span class="keyword">this</span>);</span><br><span class="line">    mWindow.setCallback(<span class="keyword">this</span>);</span><br><span class="line">    mWindow.setOnWindowDismissedCallback(<span class="keyword">this</span>);</span><br><span class="line">    mWindow.getLayoutInflater().setPrivateFactory(<span class="keyword">this</span>);</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从上面代码可以看出DecorView的dispathcTouchEvent最终使用的，仍是Activity的dispathcTouchEvent，而我们知道，DecorView是FrameLayout的子类，也是一个ViewGroup，我们回忆一下之前的ViewGroup以及View的事件分发执行流程，就可以很轻易的得出Activity、ViewGroup、View这三者事件分发的一个流程情况:</p>
+<ul>
+<li><strong>View消费事件:</strong></li>
+</ul>
+<p><img src="http://p6z0jdp7l.bkt.clouddn.com/view/View%E6%B6%88%E8%B4%B9%E4%BA%8B%E4%BB%B6.png"></p>
+<ul>
+<li><strong>ViewGroup消费事件：</strong></li>
+</ul>
+<p><img src="http://p6z0jdp7l.bkt.clouddn.com/view/ViewGroup%E6%B6%88%E8%B4%B9%E4%BA%8B%E4%BB%B6.png"></p>
+<ul>
+<li><strong>Activity消费事件：</strong></li>
+</ul>
+<p><img src="http://p6z0jdp7l.bkt.clouddn.com/view/Activity%E6%B6%88%E8%B4%B9%E4%BA%8B%E4%BB%B6.png"></p>
+<p>Activity的整个事件分发流程就是这样了，这是一个Java当中典型的责任链模式，如果理解了这个设计模式，那么对于理解Android事件分发机制会大有帮助。关于责任链模式，可以参考博文<a target="_blank" rel="noopener" href="https://blog.csdn.net/liaodehong/article/details/51408076">Java模式之责任链模式</a>。</p>
+<p>好了，以上就是本篇文章的全部内容了，如果您对文章有任何疑问或者文章内有错误或者遗漏的部分，欢迎在评论区指正，谢谢观看~</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/面试基础/">面试基础</a><a href="/tags/事件分发机制/">事件分发机制</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+  
+
+
+
+
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2020 小米粒
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

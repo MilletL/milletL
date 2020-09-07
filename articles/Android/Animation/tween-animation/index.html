@@ -1,0 +1,275 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Android动画学习之Tween Animation | RiceEater的小小世界 | My Life&#39;s Getting Better.</title>
+
+  
+  <meta name="author" content="小米粒">
+  
+
+  
+  <meta name="description" content="这篇文章里，我们来学习一下Tween Animation(补间动画)的使用。补间动画虽然是Android中较古老的一种动画系统，不过对于一般的需求已经足够使用了，因此熟练掌握它是很有必要的。Tween Animation主要有以下四种：
+
+Alpha:透明度渐变效果
+Rotate:旋转效果
+Translate:位移效果
+Scale:缩放效果
+
+Tween Animation可以使用xml或者代码两种形式来实现，接下来我们就一一举例来说明这几种效果。
+AlphaAnimationxml这个例子里我们来实现使用xml动画形式将ImageView的透明度从0变到1，而后再用java代码的形式将其从1变到0，首先是xml的编写，Tween动画的位置位于res目录下的anim中，新建anim_alpha：
+12345678910&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;utf-8&amp;quot;?&amp;gt;&amp;lt;alpha    xmlns:android=&amp;quot;http://schemas.android.com/apk/res/android&amp;quot;    android:interpolator=&amp;quot;@android:anim/accelerate_decelerate_interpolator&amp;quot;    android:fromAlpha=&amp;quot;1.0&amp;quot;    android:toAlpha=&amp;quot;0.0&amp;quot;    android:duration=&amp;quot;1000&amp;quot;    android:repeatCount=&amp;quot;0&amp;quot;    android:repeatMode=&amp;quot;reverse&amp;quot;    android:fillAfter=&amp;quot;true&amp;quot;/&amp;gt;
+
+先解释下出现的几个属性：">
+  
+
+  
+  <meta name="keywords" content="RiceEater 小米粒 riceeater.info">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="Android动画学习之Tween Animation"/>
+
+  <meta property="og:site_name" content="RiceEater的小小世界"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="RiceEater的小小世界" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+<meta name="generator" content="Hexo 5.1.1"></head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">RiceEater的小小世界</a>
+    </h1>
+    <p class="site-description">My Life&#39;s Getting Better.</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+        <li><a href="/plans">计划</a></li>
+      
+        <li><a href="/about">关于</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>Android动画学习之Tween Animation</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/Animation/tween-animation/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-04-17T12:00:01.000Z">
+          2018-04-17
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>这篇文章里，我们来学习一下Tween Animation(补间动画)的使用。补间动画虽然是Android中较古老的一种动画系统，不过对于一般的需求已经足够使用了，因此熟练掌握它是很有必要的。Tween Animation主要有以下四种：</p>
+<ol>
+<li>Alpha:透明度渐变效果</li>
+<li>Rotate:旋转效果</li>
+<li>Translate:位移效果</li>
+<li>Scale:缩放效果</li>
+</ol>
+<p>Tween Animation可以使用xml或者代码两种形式来实现，接下来我们就一一举例来说明这几种效果。</p>
+<h3 id="AlphaAnimation"><a href="#AlphaAnimation" class="headerlink" title="AlphaAnimation"></a>AlphaAnimation</h3><h4 id="xml"><a href="#xml" class="headerlink" title="xml"></a>xml</h4><p>这个例子里我们来实现使用xml动画形式将ImageView的透明度从0变到1，而后再用java代码的形式将其从1变到0，首先是xml的编写，Tween动画的位置位于res目录下的anim中，新建anim_alpha：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">alpha</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:android</span>=<span class="string">&quot;http://schemas.android.com/apk/res/android&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:interpolator</span>=<span class="string">&quot;@android:anim/accelerate_decelerate_interpolator&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:fromAlpha</span>=<span class="string">&quot;1.0&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:toAlpha</span>=<span class="string">&quot;0.0&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:duration</span>=<span class="string">&quot;1000&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:repeatCount</span>=<span class="string">&quot;0&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:repeatMode</span>=<span class="string">&quot;reverse&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:fillAfter</span>=<span class="string">&quot;true&quot;</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>先解释下出现的几个属性：</p>
+<a id="more"></a>
+
+<p>interpolator:插值器，修饰动画变化速度，有accelerated(加速)、decelerated(减速)、repeated(重复)、bounced(弹跳)等。  </p>
+<p>duration:动画持续时间</p>
+<p>repeatCount:动画执行一次后重复执行的次数，0为不重复执行</p>
+<p>repeatMode:两种，reverse执行模式为from -&gt; to -&gt; from 重复执行，restart为from -&gt; to 重新变为from -&gt; 重复此过程</p>
+<p>fillAfter:动画执行结束后是否停留在当前状态，true为结束后停留在当前状态</p>
+</br>
+
+<p>fromAlpha:alpha动画的特有属性，表示动画起始透明度，接受float类型</p>
+<p>toAlpha:alpha动画的特有属性，表示动画结束透明度，接受float类型</p>
+<p>使用编写好的xml也很简单，代码中调用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">animation = AnimationUtils.loadAnimation(<span class="keyword">this</span>,R.anim.anim_alpha);</span><br><span class="line">ivTest.startAnimation(animation);</span><br></pre></td></tr></table></figure>
+
+<p>这样，我们就使用xml完成了一个透明度动画，该动画不重复执行，会使控件在1S内透明度从1变到0也就是消失，并在动画结束后保持这个状态。</p>
+<h4 id="Java"><a href="#Java" class="headerlink" title="Java"></a>Java</h4><p>接下来我们使用Java代码来完成透明度动画，使刚刚消失的View重新显示出来，代码很简单：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">animation = <span class="keyword">new</span> AlphaAnimation(<span class="number">0.0f</span>,<span class="number">1.0f</span>);</span><br><span class="line">animation.setInterpolator(<span class="keyword">new</span> AccelerateDecelerateInterpolator());</span><br><span class="line">animation.setDuration(<span class="number">1000</span>);</span><br><span class="line">animation.setRepeatCount(<span class="number">0</span>);</span><br><span class="line">animation.setRepeatMode(Animation.REVERSE);</span><br><span class="line">animation.setFillAfter(<span class="keyword">true</span>);</span><br><span class="line">ivTest.startAnimation(animation);</span><br></pre></td></tr></table></figure>
+
+<p>可以看到我们在xml中配置的属性都可以在代码中进行设置，这里就不多做赘述</p>
+<p>下面是动画效果：</p>
+<p><img src="https://riceeater.oss-cn-qingdao.aliyuncs.com/blog/%E5%8A%A8%E7%94%BB-%E6%B8%90%E9%9A%90%E6%B8%90%E7%8E%B0.gif"></p>
+<h3 id="RotateAnimation"><a href="#RotateAnimation" class="headerlink" title="RotateAnimation"></a>RotateAnimation</h3><h4 id="xml-1"><a href="#xml-1" class="headerlink" title="xml"></a>xml</h4><p>废话不多说，直接上代码:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">rotate</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:android</span>=<span class="string">&quot;http://schemas.android.com/apk/res/android&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:fromDegrees</span>=<span class="string">&quot;0&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:toDegrees</span>=<span class="string">&quot;-360&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:pivotX</span>=<span class="string">&quot;50%&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:pivotY</span>=<span class="string">&quot;50%&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:duration</span>=<span class="string">&quot;3000&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:fillAfter</span>=<span class="string">&quot;true&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:repeatCount</span>=<span class="string">&quot;2&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:repeatMode</span>=<span class="string">&quot;restart&quot;</span></span></span><br><span class="line"><span class="tag">    /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>通用属性上面已经有讲过了，没什么好说的，这里需要注意：</p>
+<p>fromDegress:旋转起始角度</p>
+<p>toDegress:旋转结束角度</p>
+<p>pivotX:旋转中心点X轴坐标，如果加了%号代表相对于自身宽度的位置，比如50%就是指自身X轴的中心点</p>
+<p>pivotY:旋转中心点Y轴坐标，如果加了%号代表相对于自身宽度的位置，比如50%就是指自身Y轴的中心点</p>
+<p>这四个属性是RotateAnimation的独有属性，xml写好之后一样代码中调用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">animation = AnimationUtils.loadAnimation(<span class="keyword">this</span>,R.anim.anim_rotate);</span><br><span class="line">ivTest.startAnimation(animation);</span><br></pre></td></tr></table></figure>
+
+<p>此动画的效果是以view中心为圆点3S内逆时针旋转360度，重复3次</p>
+<h4 id="Java-1"><a href="#Java-1" class="headerlink" title="Java"></a>Java</h4><p>RotateAnimation的构造方法会有些多，写法是这样的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">animation = <span class="keyword">new</span> RotateAnimation(<span class="number">0</span>,<span class="number">360</span>,</span><br><span class="line">	Animation.RELATIVE_TO_SELF,<span class="number">0.5f</span>,Animation.RELATIVE_TO_SELF,<span class="number">0.5f</span>);</span><br><span class="line">animation.setInterpolator(<span class="keyword">new</span> AccelerateDecelerateInterpolator());</span><br><span class="line">animation.setDuration(<span class="number">3000</span>);</span><br><span class="line">animation.setRepeatCount(<span class="number">2</span>);</span><br><span class="line">animation.setRepeatMode(Animation.REVERSE);</span><br><span class="line">animation.setFillAfter(<span class="keyword">true</span>);</span><br><span class="line">ivTest.startAnimation(animation);</span><br></pre></td></tr></table></figure>
+
+<p>需要注意的是这个构造方法，我们查看源码可以看到</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">RotateAnimation</span><span class="params">(<span class="keyword">float</span> fromDegrees, <span class="keyword">float</span> toDegrees, <span class="keyword">int</span> pivotXType, <span class="keyword">float</span> pivotXValue,</span></span></span><br><span class="line"><span class="function"><span class="params">            <span class="keyword">int</span> pivotYType, <span class="keyword">float</span> pivotYValue)</span></span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中fromProgress与toProgress分别是起始角度和结束角度，pivotXType是X轴位置参照物，分别是：</p>
+<ol>
+<li>RELATIVE_TO_SELF：相对于控件自身； </li>
+<li>RELATIVE_TO_PARENT：相对于父控件； </li>
+<li>ABSOLUTE：绝对坐标； </li>
+</ol>
+<p>pivotXValue和pivotYValue分别是x、y轴坐标，当type是RELATIVE_TO_SELF时，取值为0~1f，当type为RELATIVE_TO_PARENT和ABSOLUTE时，value使用像素值px</p>
+<p>这个动画的效果是逆时针旋转一圈再顺时针旋转一圈再逆时针旋转一圈(注意repeatMode为REVERSE)</p>
+<p>下面是动画效果：</p>
+<p><img src="https://riceeater.oss-cn-qingdao.aliyuncs.com/blog/%E5%8A%A8%E7%94%BB-%E6%97%8B%E8%BD%AC%E5%8A%A8%E7%94%BB.gif"></p>
+<h3 id="TranslateAnimation"><a href="#TranslateAnimation" class="headerlink" title="TranslateAnimation"></a>TranslateAnimation</h3><h4 id="xml-2"><a href="#xml-2" class="headerlink" title="xml"></a>xml</h4><p>还是直接上代码：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">translate</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:android</span>=<span class="string">&quot;http://schemas.android.com/apk/res/android&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:fromXDelta</span>=<span class="string">&quot;0%&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:toXDelta</span>=<span class="string">&quot;100%&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:fromYDelta</span>=<span class="string">&quot;0%&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:toYDelta</span>=<span class="string">&quot;50%&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:duration</span>=<span class="string">&quot;3000&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:fillAfter</span>=<span class="string">&quot;true&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:repeatCount</span>=<span class="string">&quot;1&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:repeatMode</span>=<span class="string">&quot;reverse&quot;</span></span></span><br><span class="line"><span class="tag">    /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>这里的特有属性是:</p>
+<p>fromXDelta:动画开始时X轴位置，带%号则是相对本身，不带%号则为像素值</p>
+<p>toXDelta:动画结束时X轴位置，带%号则是相对本身，不带%号则为像素值</p>
+<p>fromYDelta:动画开始时Y轴位置，带%号则是相对本身，不带%号则为像素值</p>
+<p>toYDelta:动画结束时Y轴位置，带%号则是相对本身，不带%号则为像素值</p>
+<p>代码调用动画：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">animation = AnimationUtils.loadAnimation(<span class="keyword">this</span>,R.anim.anim_translate);</span><br><span class="line">ivTest.startAnimation(animation);</span><br></pre></td></tr></table></figure>
+
+<p>此动画效果是横向向右平移一个View的宽度，同时向下平移0.5View的高度</p>
+<h4 id="Java-2"><a href="#Java-2" class="headerlink" title="Java"></a>Java</h4><p>TranslateAnimation在代码中的使用方法是：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">animation = <span class="keyword">new</span> TranslateAnimation(Animation.RELATIVE_TO_SELF,<span class="number">0</span>,</span><br><span class="line">Animation.RELATIVE_TO_SELF,-<span class="number">1.0f</span>,Animation.RELATIVE_TO_SELF,<span class="number">0</span>,Animation.RELATIVE_TO_SELF,-<span class="number">0.5f</span>);</span><br><span class="line">animation.setInterpolator(<span class="keyword">new</span> AccelerateDecelerateInterpolator());</span><br><span class="line">animation.setDuration(<span class="number">3000</span>);</span><br><span class="line">animation.setRepeatCount(<span class="number">1</span>);</span><br><span class="line">animation.setRepeatMode(Animation.REVERSE);</span><br><span class="line">animation.setFillAfter(<span class="keyword">true</span>);</span><br><span class="line">ivTest.startAnimation(animation);</span><br></pre></td></tr></table></figure>
+
+<p>这里用到的构造方法是</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">TranslateAnimation</span><span class="params">(<span class="keyword">int</span> fromXType, <span class="keyword">float</span> fromXValue, <span class="keyword">int</span> toXType, <span class="keyword">float</span> toXValue,</span></span></span><br><span class="line"><span class="function"><span class="params">            <span class="keyword">int</span> fromYType, <span class="keyword">float</span> fromYValue, <span class="keyword">int</span> toYType, <span class="keyword">float</span> toYValue)</span> </span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>4个int类型的分别是参照物，同上RotateAnimation，另外四个就是xml中使用的四个属性。</p>
+<p>这个动画效果和上面xml的刚好相反</p>
+<p>惯例，动画效果如下：</p>
+<p><img src="https://riceeater.oss-cn-qingdao.aliyuncs.com/blog/%E5%8A%A8%E7%94%BB-%E5%B9%B3%E7%A7%BB.gif"></p>
+<h3 id="ScaleAnimation"><a href="#ScaleAnimation" class="headerlink" title="ScaleAnimation"></a>ScaleAnimation</h3><h4 id="xml-3"><a href="#xml-3" class="headerlink" title="xml"></a>xml</h4><p>xml的写法：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">scale</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:android</span>=<span class="string">&quot;http://schemas.android.com/apk/res/android&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:interpolator</span>=<span class="string">&quot;@android:anim/accelerate_decelerate_interpolator&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:fromXScale</span>=<span class="string">&quot;100%&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:toXScale</span>=<span class="string">&quot;20%&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:fromYScale</span>=<span class="string">&quot;100%&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:toYScale</span>=<span class="string">&quot;20%&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:pivotX</span>=<span class="string">&quot;100%&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:pivotY</span>=<span class="string">&quot;100%&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:duration</span>=<span class="string">&quot;500&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:fillAfter</span>=<span class="string">&quot;true&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:repeatCount</span>=<span class="string">&quot;1&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:repeatMode</span>=<span class="string">&quot;reverse&quot;</span></span></span><br><span class="line"><span class="tag">    /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>ScaleAnimation的特有属性是:</p>
+<p>fromXScale:X轴起始缩放比例，0~1</p>
+<p>toXScale:X轴结束缩放比例，0~1</p>
+<p>fromYScale:Y轴起始缩放比例，0~1</p>
+<p>toYScale:Y轴结束缩放比例，0~1</p>
+<p>pivotX:动画X轴起始位置，带%号相对于自身，其余为像素值</p>
+<p>pivotY:动画Y轴起始位置，带%号相对于自身，其余为像素值</p>
+<p>代码调用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">animation = AnimationUtils.loadAnimation(<span class="keyword">this</span>,R.anim.anim_scale);</span><br><span class="line">ivTest.startAnimation(animation);</span><br></pre></td></tr></table></figure>
+
+<p>此动画效果是横向向右下缩放至原View的20%</p>
+<h4 id="Java-3"><a href="#Java-3" class="headerlink" title="Java"></a>Java</h4><p>代码中使用ScaleAnimation的方式是：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">animation = <span class="keyword">new</span> ScaleAnimation(<span class="number">1.0f</span>,<span class="number">2.0f</span>,<span class="number">1.0f</span>,<span class="number">2.0f</span>,</span><br><span class="line">Animation.RELATIVE_TO_SELF,<span class="number">1</span>,Animation.RELATIVE_TO_SELF,<span class="number">1</span>);</span><br><span class="line">animation.setInterpolator(<span class="keyword">new</span> AccelerateDecelerateInterpolator());</span><br><span class="line">animation.setDuration(<span class="number">500</span>);</span><br><span class="line">animation.setRepeatCount(<span class="number">1</span>);</span><br><span class="line">animation.setRepeatMode(Animation.REVERSE);</span><br><span class="line">animation.setFillAfter(<span class="keyword">true</span>);</span><br><span class="line">ivTest.startAnimation(animation);</span><br></pre></td></tr></table></figure>
+
+<p>这次的构造方法就不用细说了，跟上面两个类似</p>
+<p>动画效果是这样的：</p>
+<p><img src="https://riceeater.oss-cn-qingdao.aliyuncs.com/blog/%E5%8A%A8%E7%94%BB-%E7%BC%A9%E6%94%BE.gif"></p>
+<h3 id="AnimationSet"><a href="#AnimationSet" class="headerlink" title="AnimationSet"></a>AnimationSet</h3><p>这里再讲一个动画集合的使用</p>
+<h4 id="xml-4"><a href="#xml-4" class="headerlink" title="xml"></a>xml</h4><p>AnimationSet的xml文件同样存放在res/anim下，它可以允许放置多个动画效果，按顺序执行，xml代码如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">set</span> <span class="attr">xmlns:android</span>=<span class="string">&quot;http://schemas.android.com/apk/res/android&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:duration</span>=<span class="string">&quot;2000&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">alpha</span></span></span><br><span class="line"><span class="tag">        <span class="attr">...</span></span></span><br><span class="line"><span class="tag">        /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">rotate</span></span></span><br><span class="line"><span class="tag">        <span class="attr">...</span></span></span><br><span class="line"><span class="tag">        /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">translate</span></span></span><br><span class="line"><span class="tag">        <span class="attr">...</span></span></span><br><span class="line"><span class="tag">        /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">scale</span></span></span><br><span class="line"><span class="tag">        <span class="attr">...</span></span></span><br><span class="line"><span class="tag">        /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">set</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>使用xml依然是</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">animation = AnimationUtils.loadAnimation(<span class="keyword">this</span>,R.anim.anim_set);</span><br><span class="line">ivTest2.startAnimation(animation);</span><br></pre></td></tr></table></figure>
+
+<p>需要注意的是xml中&lt;set&gt;可以嵌套&lt;set&gt;</p>
+<h4 id="Java-4"><a href="#Java-4" class="headerlink" title="Java"></a>Java</h4><p>代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//显示动画</span></span><br><span class="line">AlphaAnimation alphaAnimation = <span class="keyword">new</span> AlphaAnimation(<span class="number">0.0f</span>,<span class="number">1.0f</span>);</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line"><span class="comment">//旋转动画</span></span><br><span class="line">RotateAnimation rotateAnimation = <span class="keyword">new</span> RotateAnimation(<span class="number">0</span>,<span class="number">360</span>,Animation.RELATIVE_TO_SELF,<span class="number">0.5f</span>,Animation.RELATIVE_TO_SELF,<span class="number">0.5f</span>);</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line"><span class="comment">//平移动画</span></span><br><span class="line">TranslateAnimation translateAnimation = <span class="keyword">new</span> TranslateAnimation(Animation.RELATIVE_TO_SELF,<span class="number">0</span>,Animation.RELATIVE_TO_SELF,-<span class="number">1.0f</span>,</span><br><span class="line">                                                               Animation.RELATIVE_TO_SELF,<span class="number">0</span>,Animation.RELATIVE_TO_SELF,-<span class="number">0.5f</span>);</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line"><span class="comment">//拉伸动画</span></span><br><span class="line">ScaleAnimation scaleAnimation = <span class="keyword">new</span> ScaleAnimation(<span class="number">1.0f</span>,<span class="number">2.0f</span>,<span class="number">1.0f</span>,<span class="number">2.0f</span>,</span><br><span class="line">Animation.RELATIVE_TO_SELF,<span class="number">1</span>,Animation.RELATIVE_TO_SELF,<span class="number">1</span>);</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line"><span class="comment">//AnimationSet</span></span><br><span class="line">AnimationSet animationSet = <span class="keyword">new</span> AnimationSet(<span class="keyword">true</span>);</span><br><span class="line">animationSet.addAnimation(scaleAnimation);</span><br><span class="line">animationSet.addAnimation(translateAnimation);</span><br><span class="line">animationSet.addAnimation(rotateAnimation);</span><br><span class="line">animationSet.addAnimation(alphaAnimation);</span><br><span class="line">ivTest2.startAnimation(animationSet);</span><br></pre></td></tr></table></figure>
+
+<p>效果如下</p>
+<p><img src="https://riceeater.oss-cn-qingdao.aliyuncs.com/blog/%E5%8A%A8%E7%94%BB%E9%9B%86-Animation.gif"></p>
+<h3 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h3><p>到这里我们就算是吧Tween动画的四种动画效果写完了，还熟悉了AnimationSet的使用，demo已经上传至github，地址在：<a target="_blank" rel="noopener" href="https://github.com/riceeater/AndroidAnimationTest">github</a>，欢迎指教~</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Android动画/">Android动画</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+  
+
+
+
+
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2020 小米粒
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

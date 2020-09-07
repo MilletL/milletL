@@ -1,0 +1,161 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Android面试基础-Fragment | RiceEater的小小世界 | My Life&#39;s Getting Better.</title>
+
+  
+  <meta name="author" content="小米粒">
+  
+
+  
+  <meta name="description" content="Fragment相关基础知识:
+FragmentPagerAdapter与FragmentStatePagerAdapter的区别前者适用于页面较少的情况，后者用于页面较多的情况。
+FragmentPagerAdapter：保存所有加入的fragment，虽然步长超过1的页面会调用destroyItem，但是在fragment的生命周期里，只有onDestroyView调用了，没有调用onDestory，也没有调用onDetach，所以fragment只是把上面的view销毁了，fragment并没有销毁，下次再创建的时候，只会调用onCreateView和onActivityCreated，所以FragmentPagerAdapter里所有fragment都没有销毁，这样占用内存大，同时避免了频繁的销毁和创建，适用于页面比较少的情况。
+FragmentStatePagerAdapter:对步长以内的fragment，跟FragmentPagerAdapter一样，不会调用任何销毁操作，再次显示也无需重新创建，对步长以外的fragment会调用destroyItem，跟FragmentPagerAdapter不一样，会真正销毁（同时销毁view和fragment，调用onDestroyView以及其后面的所有销毁方法），重建时会从最初的onAttach开始一直到onActivityCreated，适用于页面比较多的情况。">
+  
+
+  
+  <meta name="keywords" content="RiceEater 小米粒 riceeater.info">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="Android面试基础-Fragment"/>
+
+  <meta property="og:site_name" content="RiceEater的小小世界"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="RiceEater的小小世界" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+<meta name="generator" content="Hexo 5.1.1"></head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">RiceEater的小小世界</a>
+    </h1>
+    <p class="site-description">My Life&#39;s Getting Better.</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+        <li><a href="/plans">计划</a></li>
+      
+        <li><a href="/about">关于</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>Android面试基础-Fragment</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/Base/Fragment/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-04-14T06:01:11.000Z">
+          2018-04-14
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>Fragment相关基础知识:</p>
+<h3 id="FragmentPagerAdapter与FragmentStatePagerAdapter的区别"><a href="#FragmentPagerAdapter与FragmentStatePagerAdapter的区别" class="headerlink" title="FragmentPagerAdapter与FragmentStatePagerAdapter的区别"></a>FragmentPagerAdapter与FragmentStatePagerAdapter的区别</h3><p>前者适用于页面较少的情况，后者用于页面较多的情况。</p>
+<p>FragmentPagerAdapter：保存所有加入的fragment，虽然步长超过1的页面会调用destroyItem，但是在fragment的生命周期里，只有onDestroyView调用了，没有调用onDestory，也没有调用onDetach，所以fragment只是把上面的view销毁了，fragment并没有销毁，下次再创建的时候，只会调用onCreateView和onActivityCreated，所以FragmentPagerAdapter里所有fragment都没有销毁，这样占用内存大，同时避免了频繁的销毁和创建，适用于页面比较少的情况。</p>
+<p>FragmentStatePagerAdapter:对步长以内的fragment，跟FragmentPagerAdapter一样，不会调用任何销毁操作，再次显示也无需重新创建，对步长以外的fragment会调用destroyItem，跟FragmentPagerAdapter不一样，会真正销毁（同时销毁view和fragment，调用onDestroyView以及其后面的所有销毁方法），重建时会从最初的onAttach开始一直到onActivityCreated，适用于页面比较多的情况。</p>
+<a id="more"></a>
+
+<h3 id="Fragment生命周期"><a href="#Fragment生命周期" class="headerlink" title="Fragment生命周期"></a>Fragment生命周期</h3><p><img src="https://riceeater.oss-cn-qingdao.aliyuncs.com/blog/Fragment%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.webp"></p>
+<h3 id="Fragment通信"><a href="#Fragment通信" class="headerlink" title="Fragment通信"></a>Fragment通信</h3><ol>
+<li>Fragment调用getActivity()获取所依附的Activity对象</li>
+<li>Activity中调用Fragment的方法可以通过接口回调等手段</li>
+<li>在Fragment中调用Fragment的方法通过findFragmentById</li>
+</ol>
+<h3 id="FragmentManager相关方法"><a href="#FragmentManager相关方法" class="headerlink" title="FragmentManager相关方法"></a>FragmentManager相关方法</h3><p>replace add remove</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/面试基础/">面试基础</a><a href="/tags/Android基础组件/">Android基础组件</a><a href="/tags/Fragment/">Fragment</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+  
+
+
+
+
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2020 小米粒
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

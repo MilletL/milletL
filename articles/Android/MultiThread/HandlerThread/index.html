@@ -1,0 +1,180 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Android多线程-HandlerThread的简单使用与剖析 | RiceEater的小小世界 | My Life&#39;s Getting Better.</title>
+
+  
+  <meta name="author" content="小米粒">
+  
+
+  
+  <meta name="description" content="前面我们讲到，Android中子线程与主线程通信我们主要用到Handler，在一些轻量级的需求上，可以使用AsyncTask。但是使用Handler有没有简单的方法实现主线程与子线程的通信呢。Android已经为我们内置了这么一个类HandlerThread，顾名思义，这是一个线程类，可以让我们更方便地实现线程间通信，那么，下面我们就通过一个简单的例子来了解一下这个类的使用方法。
+简单使用这里我们使用一个按钮来模拟手机收到服务器推送消息，收到推送消息后我们需要进行下载操作，这当然放在子线程中进行，子线程将下载进度传给主线程并且在下载完成后通知主线程进行安装操作。简单的逻辑，我们先来看看本章的主角HandlerThread的用法：
+1234567891011private void initThread() &amp;#123;     //初始化工作线程    workerThread = new HandlerThread(&amp;quot;down-load-thread&amp;quot;);    //启动工作线程    workerThread.start();    //初始化工作线程handler,传入Looper实现与工作线程的绑定    workerHandler = new DownLoadHandler(workerThread.getLooper(),                                        new WeakReference&amp;lt;HandlerThreadDemoActivity&amp;gt;(this));    //初始化主线程    mainHandler = new MainHandler(new WeakReference&amp;lt;HandlerThreadDemoActivity&amp;gt;(this));&amp;#125;
+
+可以看到使用方法还是很简单的，我们需要先对HandlerThread进行初始化，并且启动这个线程，然后将该线程的Looper传给工作线程的消息处理器workerHandler，接下来我们初始化一个主线程的消息处理器mainHandler。初始化工作就完成了，接下来是点击按钮的操作：">
+  
+
+  
+  <meta name="keywords" content="RiceEater 小米粒 riceeater.info">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="Android多线程-HandlerThread的简单使用与剖析"/>
+
+  <meta property="og:site_name" content="RiceEater的小小世界"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="RiceEater的小小世界" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+<meta name="generator" content="Hexo 5.1.1"></head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">RiceEater的小小世界</a>
+    </h1>
+    <p class="site-description">My Life&#39;s Getting Better.</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+        <li><a href="/plans">计划</a></li>
+      
+        <li><a href="/about">关于</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>Android多线程-HandlerThread的简单使用与剖析</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/MultiThread/HandlerThread/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-04-26T11:49:43.000Z">
+          2018-04-26
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>前面我们讲到，Android中子线程与主线程通信我们主要用到Handler，在一些轻量级的需求上，可以使用AsyncTask。但是使用Handler有没有简单的方法实现主线程与子线程的通信呢。Android已经为我们内置了这么一个类HandlerThread，顾名思义，这是一个线程类，可以让我们更方便地实现线程间通信，那么，下面我们就通过一个简单的例子来了解一下这个类的使用方法。</p>
+<h3 id="简单使用"><a href="#简单使用" class="headerlink" title="简单使用"></a>简单使用</h3><p>这里我们使用一个按钮来模拟手机收到服务器推送消息，收到推送消息后我们需要进行下载操作，这当然放在子线程中进行，子线程将下载进度传给主线程并且在下载完成后通知主线程进行安装操作。简单的逻辑，我们先来看看本章的主角HandlerThread的用法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">initThread</span><span class="params">()</span> </span>&#123; </span><br><span class="line">    <span class="comment">//初始化工作线程</span></span><br><span class="line">    workerThread = <span class="keyword">new</span> HandlerThread(<span class="string">&quot;down-load-thread&quot;</span>);</span><br><span class="line">    <span class="comment">//启动工作线程</span></span><br><span class="line">    workerThread.start();</span><br><span class="line">    <span class="comment">//初始化工作线程handler,传入Looper实现与工作线程的绑定</span></span><br><span class="line">    workerHandler = <span class="keyword">new</span> DownLoadHandler(workerThread.getLooper(),</span><br><span class="line">                                        <span class="keyword">new</span> WeakReference&lt;HandlerThreadDemoActivity&gt;(<span class="keyword">this</span>));</span><br><span class="line">    <span class="comment">//初始化主线程</span></span><br><span class="line">    mainHandler = <span class="keyword">new</span> MainHandler(<span class="keyword">new</span> WeakReference&lt;HandlerThreadDemoActivity&gt;(<span class="keyword">this</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到使用方法还是很简单的，我们需要先对HandlerThread进行初始化，并且启动这个线程，然后将该线程的Looper传给工作线程的消息处理器workerHandler，接下来我们初始化一个主线程的消息处理器mainHandler。初始化工作就完成了，接下来是点击按钮的操作：</p>
+<a id="more"></a>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Button点击事件，模拟收到推送消息，开始下载</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> view</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">getPushMessage</span><span class="params">(View view)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//模拟收到推送消息，请求下载</span></span><br><span class="line">    Message message = Message.obtain();</span><br><span class="line">    message.what = DOWN_LOAD_TASK;</span><br><span class="line">    message.obj = downloadUrl;</span><br><span class="line">    <span class="comment">//工作线程消息处理器发出消息，消息会进入工作线程的MessageQueue中，</span></span><br><span class="line">    <span class="comment">// 并被工作线程Looper取出并重新分发给workerHandler</span></span><br><span class="line">    workerHandler.sendMessage(message);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>点击事件很简单，向工作线程消息处理器workerHandler发送一个包含下载链接的消息，消息会进入工作线程的MessageQueue中，并最终被工作线程Looper取出并重新分发给workerHandler，我们来看看这个工作线程消息处理器DownLoadHandler这个类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//静态内部类加弱引用，防止内存泄漏</span></span><br><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">DownLoadHandler</span> <span class="keyword">extends</span> <span class="title">Handler</span> </span>&#123;</span><br><span class="line">    <span class="comment">//这里使用弱引用，防止内存泄漏</span></span><br><span class="line">    <span class="keyword">private</span> WeakReference&lt;HandlerThreadDemoActivity&gt; activityWeakReference;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DownLoadHandler</span><span class="params">(Looper looper,WeakReference&lt;HandlerThreadDemoActivity&gt; activityWeakReference)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(looper);</span><br><span class="line">        <span class="keyword">this</span>.activityWeakReference = activityWeakReference;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.handleMessage(msg);</span><br><span class="line">        Log.e(<span class="string">&quot;THREAD&quot;</span>, <span class="string">&quot;DownLoadHandler handleMessage&quot;</span>+Thread.currentThread().getId()+<span class="string">&quot;&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span>(msg.what == DOWN_LOAD_TASK) &#123;</span><br><span class="line">            <span class="comment">//判断收到消息为要求下载</span></span><br><span class="line">            String url = (String) msg.obj;</span><br><span class="line">            <span class="keyword">if</span>( !TextUtils.isEmpty(url)) &#123;</span><br><span class="line">                download(url);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">download</span><span class="params">(String url)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span>&#123;</span><br><span class="line">            <span class="comment">//下载路径</span></span><br><span class="line">            String path = Environment.getExternalStorageDirectory().getAbsolutePath();</span><br><span class="line"></span><br><span class="line">            <span class="comment">//文件名</span></span><br><span class="line">            String filename=url.substring(url.lastIndexOf(<span class="string">&quot;/&quot;</span>) + <span class="number">1</span>);</span><br><span class="line">            <span class="comment">//获取文件名</span></span><br><span class="line">            URL myURL = <span class="keyword">new</span> URL(url);</span><br><span class="line">            URLConnection conn = myURL.openConnection();</span><br><span class="line">            conn.connect();</span><br><span class="line">            InputStream is = conn.getInputStream();</span><br><span class="line">            <span class="keyword">int</span> fileSize = conn.getContentLength();<span class="comment">//根据响应获取文件大小</span></span><br><span class="line">            <span class="keyword">if</span> (fileSize &lt;= <span class="number">0</span>) <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;无法获知文件大小 &quot;</span>);</span><br><span class="line">            <span class="keyword">if</span> (is == <span class="keyword">null</span>) <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;stream is null&quot;</span>);</span><br><span class="line">            File file = <span class="keyword">new</span> File(path+<span class="string">&quot;/&quot;</span>+filename);</span><br><span class="line">            <span class="keyword">if</span>(!file.exists())&#123;</span><br><span class="line">                file.mkdirs();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//把数据存入路径+文件名</span></span><br><span class="line">            FileOutputStream fos = <span class="keyword">new</span> FileOutputStream(file);</span><br><span class="line">            <span class="keyword">byte</span> buf[] = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1024</span>];</span><br><span class="line">            <span class="keyword">int</span> downLoadFileSize = <span class="number">0</span>;<span class="comment">//记录已下载大小</span></span><br><span class="line">            <span class="keyword">int</span> numRead = is.read(buf);</span><br><span class="line">            <span class="keyword">while</span>(numRead != -<span class="number">1</span> &amp;&amp; activityWeakReference.get().isRunning) &#123;</span><br><span class="line">                fos.write(buf, <span class="number">0</span>, numRead);</span><br><span class="line">                downLoadFileSize += numRead;</span><br><span class="line">                numRead = is.read(buf);</span><br><span class="line">                <span class="comment">//更新进度条</span></span><br><span class="line">                <span class="keyword">float</span> percent = downLoadFileSize / (fileSize * <span class="number">1f</span>);</span><br><span class="line">                Message message = Message.obtain();</span><br><span class="line">                message.what = UPDATE_PROGRESS;</span><br><span class="line">                <span class="keyword">if</span>(percent == <span class="number">1</span>) &#123;</span><br><span class="line">                    Bundle bundle = <span class="keyword">new</span> Bundle();</span><br><span class="line">                    bundle.putString(<span class="string">&quot;file&quot;</span>, file.getAbsolutePath());</span><br><span class="line">                    message.setData(bundle);</span><br><span class="line">                &#125;</span><br><span class="line">                message.obj = percent;</span><br><span class="line">                activityWeakReference.get().sendProgressMessage(message);</span><br><span class="line">            &#125;</span><br><span class="line">            is.close();</span><br><span class="line">            fos.close();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception ex) &#123;</span><br><span class="line">            Log.e(<span class="string">&quot;DOWNLOAD&quot;</span>, <span class="string">&quot;error: &quot;</span> + ex.getMessage(), ex);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 发送更新进度条消息，在子线程中执行</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> message 消息体</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sendProgressMessage</span><span class="params">(Message message)</span> </span>&#123;</span><br><span class="line">    Log.e(<span class="string">&quot;THREAD&quot;</span>, <span class="string">&quot;sendProgressMessage&quot;</span>+Thread.currentThread().getId()+<span class="string">&quot;&quot;</span>);</span><br><span class="line">    mainHandler.sendMessage(message);<span class="comment">//子线程将消息发给主线程</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>工作线程的消息处理逻辑很简单，收到消息判断如果是要求下载，开始下载，并在循环中将下载进度发送给主线程的消息处理器mainHandler，这里要注意sendProgressMessage方法是运行于子线程中的，感兴趣的可以看下日志中打印的线程id。接下来消息已经发到了mainHandler，MainHandler类中的处理逻辑是这样的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//使用静态内部类防止内存泄漏</span></span><br><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">MainHandler</span> <span class="keyword">extends</span> <span class="title">Handler</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> WeakReference&lt;HandlerThreadDemoActivity&gt; activityWeakReference;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MainHandler</span><span class="params">(WeakReference&lt;HandlerThreadDemoActivity&gt; activityWeakReference)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.activityWeakReference = activityWeakReference;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.handleMessage(msg);</span><br><span class="line">        Log.e(<span class="string">&quot;THREAD&quot;</span>, <span class="string">&quot;MainHandler handleMessage&quot;</span>+Thread.currentThread().getId()+<span class="string">&quot;&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span>(msg.what == UPDATE_PROGRESS) &#123;</span><br><span class="line">            <span class="comment">//获取到更新进度条的消息</span></span><br><span class="line">            <span class="keyword">float</span> percent = (<span class="keyword">float</span>) msg.obj;</span><br><span class="line">            <span class="keyword">if</span>(percent != <span class="number">1</span>) &#123;</span><br><span class="line">                activityWeakReference.get().updateProgress(percent);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                Bundle bundle = msg.getData();</span><br><span class="line">                String filePath = bundle.getString(<span class="string">&quot;file&quot;</span>);</span><br><span class="line">                activityWeakReference.get().updateProgress(percent,filePath);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 更新UI操作，主线程进行</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> percent</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">updateProgress</span><span class="params">(<span class="keyword">float</span> percent)</span> </span>&#123;</span><br><span class="line">    updateProgress(percent,<span class="keyword">null</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">updateProgress</span><span class="params">(<span class="keyword">float</span> percent,String filePath)</span> </span>&#123;</span><br><span class="line">    Log.e(<span class="string">&quot;THREAD&quot;</span>, <span class="string">&quot;updateProgress&quot;</span>+Thread.currentThread().getId()+<span class="string">&quot;&quot;</span>);</span><br><span class="line">    tvProgressValue.setText(<span class="string">&quot;当前进度:&quot;</span>+String.format(<span class="string">&quot;%.2f%%&quot;</span>,percent * <span class="number">100</span>));</span><br><span class="line">    pbLoading.setProgress((<span class="keyword">int</span>) (percent * PROGRESS_MAX_VALUE));</span><br><span class="line">    <span class="keyword">if</span>(percent == <span class="number">1</span>) &#123;</span><br><span class="line">        Toast.makeText(<span class="keyword">this</span>,<span class="string">&quot;下载完成&quot;</span>,Toast.LENGTH_SHORT).show();</span><br><span class="line">        install(filePath);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>收到消息，更新UI，判断下载完成进行安装，很简单的逻辑。</p>
+<p>最后别忘了在Activity销毁时关闭HandlerThread：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onDestroy</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    isRunning = <span class="keyword">false</span>;<span class="comment">//设置运行状态为false</span></span><br><span class="line">    <span class="keyword">if</span>(workerThread != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.JELLY_BEAN_MR2) &#123;</span><br><span class="line">            workerThread.quitSafely();<span class="comment">//线程安全</span></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            workerThread.quit();<span class="comment">//非线程安全</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(workerHandler != <span class="keyword">null</span>) &#123;</span><br><span class="line">        workerHandler.removeCallbacksAndMessages(<span class="keyword">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(mainHandler != <span class="keyword">null</span>) &#123;</span><br><span class="line">        mainHandler.removeCallbacksAndMessages(<span class="keyword">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">super</span>.onDestroy();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>至此，全部代码完成。</p>
+<p>效果如图：</p>
+<p><img src="https://riceeater.oss-cn-qingdao.aliyuncs.com/blog/%E5%A4%9A%E7%BA%BF%E7%A8%8B-HandlerThread%E6%A8%A1%E6%8B%9F%E4%B8%8B%E8%BD%BD.gif"></p>
+<h3 id="原理浅析"><a href="#原理浅析" class="headerlink" title="原理浅析"></a>原理浅析</h3><p>接下来我们简单聊聊HandlerThread的原理，我们之前在讲到Handler的时候有说过，Handler不能直接在子线程中使用，在子线程中使用前需要先进行相关操作，那么我们查看HandlerThread的源码看看HandlerThread的相关方法中是否初始化了Looper对象：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">HandlerThread</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>(name);</span><br><span class="line">    mPriority = Process.THREAD_PRIORITY_DEFAULT;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到其构造方法中很简单的只是设置了该线程的优先级而已，继续往下看：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    mTid = Process.myTid();</span><br><span class="line">    Looper.prepare();</span><br><span class="line">    <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">        mLooper = Looper.myLooper();</span><br><span class="line">        notifyAll();</span><br><span class="line">    &#125;</span><br><span class="line">    Process.setThreadPriority(mPriority);</span><br><span class="line">    onLooperPrepared();</span><br><span class="line">    Looper.loop();</span><br><span class="line">    mTid = -<span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> Looper <span class="title">getLooper</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!isAlive()) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// If the thread has been started, wait until the looper has been created.</span></span><br><span class="line">    <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">        <span class="keyword">while</span> (isAlive() &amp;&amp; mLooper == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                wait();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> mLooper;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到在线程调用start方法后会紧接着执行run方法，其中我们看到了猜测的Looper.prepare，通过之前的学习我们知道这个方法用于生成一个Looper，并且初始化一个MessageQueue。紧接着，使用同步锁将生成的looper对象与当前线程绑定，而后调用notifyAll方法通知其他线程Looper初始化完毕(主要是为了通知getLooper中的wait方法)，保证线程同步。接下来是一个回调方法，然后是Looper.loop开始轮询，这就与我们之前讲到的子线程中使用Handler的知识一样了。</p>
+<p>好了，这篇文章就是这样，如果您对文章内容有疑惑或者需要纠错，请评论或者<a href="xylitol306@gmail.com">Email</a>联系我，本文代码地址在<a target="_blank" rel="noopener" href="https://github.com/riceeater/AndroidMultiThreadTest">github</a>，欢迎查看，提意见.</p>
+<p>See you~</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Android多线程通信/">Android多线程通信</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+  
+
+
+
+
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2020 小米粒
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>
