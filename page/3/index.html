@@ -65,6 +65,71 @@
 
   
     
+    <h3 class="article-title"><a href="/articles/Android/MultiThread/AsyncTask/"><span>Android多线程-AsyncTask简单使用</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/MultiThread/AsyncTask/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-04-25T12:15:56.000Z">
+          2018-04-25
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>通过前几篇文章的学习，我们已经对Android多线程通信有了一定的了解。那么这篇文章我们来讲讲Android系统为我们内置的异步任务类AsyncTask。运用AsyncTask可以让我们只关注于子线程中的耗时操作和更新UI的操作，使用起来会比Handler要简单一些，当然，只是针对一些简单操作，比如网络操作，图片加载，数据获取等等。</p>
+<h3 id="简单介绍"><a href="#简单介绍" class="headerlink" title="简单介绍"></a>简单介绍</h3><p>首先AsyncTask是一个抽象类，一般我们使用它会定义一个它的子类并复写其方法来使用，先看类定义：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Params：启动任务传入参数</span></span><br><span class="line"><span class="comment"> * Progress：任务执行进度值</span></span><br><span class="line"><span class="comment"> * Result：异步任务完成返回值</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">AsyncTask</span>&lt;<span class="title">Params</span>, <span class="title">Progress</span>, <span class="title">Result</span>&gt; </span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们需要传入三个泛型，分别是参数、进度和返回值，其中最重要的几个方法有：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 主线程中执行，调用execute方法后立即执行</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@MainThread</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onPreExecute</span><span class="params">()</span> </span>&#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 工作线程中执行，会在执行完onPreExecute后执行方法</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> Params 接受参数</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> 返回结果，传递给onPostExecute</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@WorkerThread</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">abstract</span> Result <span class="title">doInBackground</span><span class="params">(Params... params)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 主线程执行，在手动调用publishProgress后被自动调用</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> values 异步任务进度</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@MainThread</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onProgressUpdate</span><span class="params">(Progress... values)</span> </span>&#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 主线程执行，工作任务完成后调用该方法</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> result 返回结果</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@MainThread</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onPostExecute</span><span class="params">(Result result)</span> </span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Android多线程通信/">Android多线程通信</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
     <h3 class="article-title"><a href="/articles/Android/MultiThread/Handler-2/"><span>Android多线程-Handler原理简单剖析</span></a></h3>
     
   
@@ -676,75 +741,7 @@
 
     <span class="post-tags">
       <i class="icon-tags"></i>
-        <a href="/tags/Android四大组件/">Android四大组件</a><a href="/tags/面试基础/">面试基础</a><a href="/tags/WebView/">WebView</a><a href="/tags/内存泄漏/">内存泄漏</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-</article>
-
-
-
-  <article>
-
-  
-    
-    <h3 class="article-title"><a href="/articles/Android/Base/Service/"><span>Android面试基础-Service</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/articles/Android/Base/Service/" rel="bookmark">
-        <time class="entry-date published" datetime="2018-04-15T09:18:59.000Z">
-          2018-04-15
-        </time>
-      </a>
-    </span>
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-        <h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><p>Service(服务)是一个一种可以在后台执行长时间运行操作而没有用户界面的应用组件。服务可由其他应用组件启动（如Activity），服务一旦被启动将在后台一直运行，即使启动服务的组件（Activity）已销毁也不受影响(Start模式)。 此外，组件可以绑定到服务，以与之进行交互，甚至是执行进程间通信 (IPC)。 例如，服务可以处理网络事务、播放音乐，执行文件 I/O 或与内容提供程序交互，而所有这一切均可在后台进行。Service分为两种状态：</p>
-<ul>
-<li><strong>启动状态</strong></li>
-</ul>
-<p>当应用组件（如 Activity）通过调用 startService() 启动服务时，服务即处于“启动”状态。一旦启动，服务即可在后台无限期运行，即使启动服务的组件已被销毁也不受影响，除非手动调用才能停止服务， 已启动的服务通常是执行单一操作，而且不会将结果返回给调用方。</p>
-<ul>
-<li><strong>绑定状态</strong></li>
-</ul>
-<p>当应用组件通过调用 bindService() 绑定到服务时，服务即处于“绑定”状态。绑定服务提供了一个客户端-服务器接口，允许组件与服务进行交互、发送请求、获取结果，甚至是利用进程间通信 (IPC) 跨进程执行这些操作。 仅当与另一个应用组件绑定时，绑定服务才会运行。 多个组件可以同时绑定到该服务，但全部取消绑定后，该服务即会被销毁。</p>
-        
-      
-    </div>
-
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-      
-
-    <span class="post-categories">
-      <i class="icon-categories"></i>
-        <a href="/categories/Android知识体系/">Android知识体系</a>
-    </span>
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/Android四大组件/">Android四大组件</a><a href="/tags/面试基础/">面试基础</a><a href="/tags/Service/">Service</a>
+        <a href="/tags/面试基础/">面试基础</a><a href="/tags/WebView/">WebView</a><a href="/tags/Android四大组件/">Android四大组件</a><a href="/tags/内存泄漏/">内存泄漏</a>
     </span>
     
 

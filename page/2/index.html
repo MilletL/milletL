@@ -65,6 +65,75 @@
 
   
     
+    <h3 class="article-title"><a href="/articles/Android/View/SuspensionBar/"><span>Android沉浸式状态栏、颜色渐变、副标题动画和TabLayout悬浮条</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/articles/Android/View/SuspensionBar/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-05-15T11:39:40.000Z">
+          2018-05-15
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>嘛，几天没学习，我浑身难受。</p>
+<p>今天把前段时间公司这边的几个需求放在一起总结了一下，有这样几个:</p>
+<ul>
+<li><strong>沉浸式状态栏(5.0以上)，并要求上部bar随着RecyclerView滑动变色</strong></li>
+<li><strong>RecyclerView悬浮条，与普通悬浮条不同的是悬浮条是一个可滑动的TabLayout</strong></li>
+<li><strong>副标题随着RecyclerView滑动动画上移或者动画下移</strong></li>
+</ul>
+<p>把这几个东西放一起来重新梳理一下吧，先上效果图：</p>
+<p><img src="/images/%E8%87%AA%E5%AE%9A%E4%B9%89View-%E6%82%AC%E6%B5%AE%E6%9D%A1.gif"></p>
+<p>左边是Android4.1上的效果，右边是5.0以上效果。下面就一点点来分析这种效果是如何实现的。</p>
+        
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android知识体系/">Android知识体系</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Android实战/">Android实战</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
     <h3 class="article-title"><a href="/articles/Android/View/VerificationCodeView/"><span>Android自定义View-仿滴滴自定义验证码输入框</span></a></h3>
     
   
@@ -569,7 +638,7 @@
 
     <span class="post-tags">
       <i class="icon-tags"></i>
-        <a href="/tags/Service/">Service</a><a href="/tags/Android多线程通信/">Android多线程通信</a>
+        <a href="/tags/Android多线程通信/">Android多线程通信</a><a href="/tags/Service/">Service</a>
     </span>
     
 
@@ -610,71 +679,6 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">initThread</span><span class="params">()</span> </span>&#123; </span><br><span class="line">    <span class="comment">//初始化工作线程</span></span><br><span class="line">    workerThread = <span class="keyword">new</span> HandlerThread(<span class="string">&quot;down-load-thread&quot;</span>);</span><br><span class="line">    <span class="comment">//启动工作线程</span></span><br><span class="line">    workerThread.start();</span><br><span class="line">    <span class="comment">//初始化工作线程handler,传入Looper实现与工作线程的绑定</span></span><br><span class="line">    workerHandler = <span class="keyword">new</span> DownLoadHandler(workerThread.getLooper(),</span><br><span class="line">                                        <span class="keyword">new</span> WeakReference&lt;HandlerThreadDemoActivity&gt;(<span class="keyword">this</span>));</span><br><span class="line">    <span class="comment">//初始化主线程</span></span><br><span class="line">    mainHandler = <span class="keyword">new</span> MainHandler(<span class="keyword">new</span> WeakReference&lt;HandlerThreadDemoActivity&gt;(<span class="keyword">this</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>可以看到使用方法还是很简单的，我们需要先对HandlerThread进行初始化，并且启动这个线程，然后将该线程的Looper传给工作线程的消息处理器workerHandler，接下来我们初始化一个主线程的消息处理器mainHandler。初始化工作就完成了，接下来是点击按钮的操作：</p>
-        
-      
-    </div>
-
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-      
-
-    <span class="post-categories">
-      <i class="icon-categories"></i>
-        <a href="/categories/Android知识体系/">Android知识体系</a>
-    </span>
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/Android多线程通信/">Android多线程通信</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-</article>
-
-
-
-  <article>
-
-  
-    
-    <h3 class="article-title"><a href="/articles/Android/MultiThread/AsyncTask/"><span>Android多线程-AsyncTask简单使用</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/articles/Android/MultiThread/AsyncTask/" rel="bookmark">
-        <time class="entry-date published" datetime="2018-04-25T12:15:56.000Z">
-          2018-04-25
-        </time>
-      </a>
-    </span>
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-        <p>通过前几篇文章的学习，我们已经对Android多线程通信有了一定的了解。那么这篇文章我们来讲讲Android系统为我们内置的异步任务类AsyncTask。运用AsyncTask可以让我们只关注于子线程中的耗时操作和更新UI的操作，使用起来会比Handler要简单一些，当然，只是针对一些简单操作，比如网络操作，图片加载，数据获取等等。</p>
-<h3 id="简单介绍"><a href="#简单介绍" class="headerlink" title="简单介绍"></a>简单介绍</h3><p>首先AsyncTask是一个抽象类，一般我们使用它会定义一个它的子类并复写其方法来使用，先看类定义：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Params：启动任务传入参数</span></span><br><span class="line"><span class="comment"> * Progress：任务执行进度值</span></span><br><span class="line"><span class="comment"> * Result：异步任务完成返回值</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">AsyncTask</span>&lt;<span class="title">Params</span>, <span class="title">Progress</span>, <span class="title">Result</span>&gt; </span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>我们需要传入三个泛型，分别是参数、进度和返回值，其中最重要的几个方法有：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 主线程中执行，调用execute方法后立即执行</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@MainThread</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onPreExecute</span><span class="params">()</span> </span>&#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 工作线程中执行，会在执行完onPreExecute后执行方法</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> Params 接受参数</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> 返回结果，传递给onPostExecute</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@WorkerThread</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">abstract</span> Result <span class="title">doInBackground</span><span class="params">(Params... params)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 主线程执行，在手动调用publishProgress后被自动调用</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> values 异步任务进度</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@MainThread</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onProgressUpdate</span><span class="params">(Progress... values)</span> </span>&#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 主线程执行，工作任务完成后调用该方法</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> result 返回结果</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@MainThread</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onPostExecute</span><span class="params">(Result result)</span> </span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
         
       
     </div>
